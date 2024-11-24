@@ -1,17 +1,27 @@
-// src/App.js
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RegisterForm from './components/RegisterForm';
-import Dashboard from './components/Dashboard';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './App.css';
 
 function App() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/message')
+      .then(response => {
+        setMessage(response.data.message);
+      })
+      .catch(error => {
+        console.error('There was an error!', error);
+      });
+  }, []);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<RegisterForm />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <header className="App-header">
+        hi
+        <p>{message}</p>
+      </header>
+    </div>
   );
 }
 
