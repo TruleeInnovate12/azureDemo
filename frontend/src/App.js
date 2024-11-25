@@ -8,7 +8,7 @@ function App() {
     console.log('NODE_ENV:', process.env.NODE_ENV);
     const backendUrl = process.env.NODE_ENV === 'production'
       ? 'https://backend-azuredemo.azurewebsites.net'
-      : 'http://localhost:4040'; // Ensure this matches your local backend port
+      : 'http://localhost:4040';
     console.log('Attempting to fetch message from backend...');
     axios.get(`${backendUrl}/api/message`)
       .then(response => {
