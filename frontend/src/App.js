@@ -7,7 +7,7 @@ function App() {
   const [message, setMessage] = useState('');
   useEffect(() => {
     console.log('Attempting to fetch message from backend...');
-    axios.get('https://backend-azuredemo.azurewebsites.net/api/message') // Use HTTP
+    axios.get('https://backend-azuredemo.azurewebsites.net/api/message')
       .then(response => {
         console.log('Response received:', response);
         setMessage(response.data.message);
