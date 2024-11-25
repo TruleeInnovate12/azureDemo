@@ -6,7 +6,7 @@ function App() {
   useEffect(() => {
     const backendUrl = process.env.NODE_ENV === 'production'
       ? 'https://backend-azuredemo.azurewebsites.net'
-      : 'http://localhost:4040';
+      : 'http://localhost:4040'; // Ensure this matches your local backend port
     console.log('Attempting to fetch message from backend...');
     axios.get(`${backendUrl}/api/message`)
       .then(response => {
