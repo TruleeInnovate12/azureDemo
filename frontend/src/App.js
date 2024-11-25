@@ -3,18 +3,19 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [message, setMessage] = useState('');
 
+  const [message, setMessage] = useState('');
   useEffect(() => {
-    axios.get('https://backend-azuredemo.azurewebsites.net/api/message')
+    console.log('Attempting to fetch message from backend...');
+    axios.get('https://backend-azuredemo.azurewebsites.net/api/message') // Use HTTP
       .then(response => {
+        console.log('Response received:', response);
         setMessage(response.data.message);
       })
       .catch(error => {
         console.error('There was an error!', error);
       });
   }, []);
-
   return (
     <div className="App">
       <header className="App-header">
