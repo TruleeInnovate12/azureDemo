@@ -22,7 +22,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        hi
+        hi !
         <p>{message}</p>
       </header>
     </div>
