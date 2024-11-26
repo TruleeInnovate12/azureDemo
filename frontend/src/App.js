@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './p.css';
+
 function App() {
   const [message, setMessage] = useState('');
   console.log('NODE_ENV:', process.env.NODE_ENV);
   useEffect(() => {
     console.log('NODE_ENV:', process.env.NODE_ENV);
     const backendUrl = process.env.NODE_ENV === 'production'
-      ? 'https://backend-azuredemo.azurewebsites.net'
+      ? 'https://azuredemo-backend-bye7erbcebcwcpfg.canadacentral-01.azurewebsites.net/'
       : 'http://localhost:4040';
     console.log('Attempting to fetch message from backend...');
     axios.get(`${backendUrl}/api/message`)
