@@ -2,12 +2,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 4040;
+const port = process.env.PORT || 4041;
 
 app.use(cors());
 
 app.get('/', (req, res) => {
-    res.send('Hello!');
+    res.send('Hello');
 });
 
 app.get('/api/message', (req, res) => {

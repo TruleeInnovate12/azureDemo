@@ -4,16 +4,12 @@ import './App.css';
 
 function App() {
   const [message, setMessage] = useState('');
-  console.log('NODE_ENV:', process.env.NODE_ENV);
   useEffect(() => {
-    console.log('NODE_ENV:', process.env.NODE_ENV);
     const backendUrl = process.env.NODE_ENV === 'production'
       ? 'https://azuredemo-backend-bye7erbcebcwcpfg.canadacentral-01.azurewebsites.net/'
-      : 'http://localhost:4040';
-    console.log('Attempting to fetch message from backend...');
+      : 'http://localhost:4041';
     axios.get(`${backendUrl}/api/message`)
       .then(response => {
-        console.log('Response received:', response);
         setMessage(response.data.message);
       })
       .catch(error => {
@@ -23,7 +19,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        hi !
+        hi
         <p>{message}</p>
       </header>
     </div>
