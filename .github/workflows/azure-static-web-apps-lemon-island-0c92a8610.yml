@@ -24,9 +24,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: my-app/backend/frontend # Ensure this path is correct
 
       - name: Build the project
         run: npm run build
+        working-directory: my-app/backend/frontend # Ensure this path is correct
 
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
@@ -35,6 +37,6 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LEMON_ISLAND_0C92A8610 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # This is automatically provided by GitHub
           action: 'upload'
-          app_location: '/' # Location of your application source code
+          app_location: 'my-app/backend/frontend/build' # Ensure this path is correct
           api_location: 'api' # Location of your Azure Functions code (if any)
           output_location: 'build' # Location of the build output directory
