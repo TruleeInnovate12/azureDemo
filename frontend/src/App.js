@@ -6,7 +6,7 @@ function App() {
   const [message, setMessage] = useState('');
   useEffect(() => {
     const backendUrl = process.env.NODE_ENV === 'production'
-      ? 'https://azuredemo-backend-bye7erbcebcwcpfg.canadacentral-01.azurewebsites.net/'
+      ? 'https://github.com/TruleeInnovate12/azureDemo/'
       : 'http://localhost:4041';
     axios.get(`${backendUrl}/api/message`)
       .then(response => {
