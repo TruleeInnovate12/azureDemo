@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/message', (req, res) => {
-    res.json({ message: 'Hello from the backend!' });
+    res.json({ message: 'Hello from the backend! now updated on 11:00 pm' });
 });
 
 app.listen(port, () => {
