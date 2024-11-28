@@ -19,8 +19,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        hi 1
+        hello
         <p>{message}</p>
+        <p className='text-red-500 text-2xl'>updated changes on 10:30 pm </p>
       </header>
     </div>
   );
