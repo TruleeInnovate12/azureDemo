@@ -21,7 +21,7 @@ function App() {
       <header className="App-header">
         hello
         <p>{message}</p>
-        <p className='text-red-500 text-2xl'>updated changes on 10:30 pm </p>
+        <p className='text-red-500 text-2xl'>updated changes on 10:30 pm</p>
       </header>
     </div>
   );
