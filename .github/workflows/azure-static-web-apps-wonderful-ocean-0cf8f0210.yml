@@ -63,7 +63,7 @@ on:
     branches:
       - main
     paths:
-      - "./frontend/**"
+      - "./backend/frontend/**"
       - ".github/workflows/azure-static-web-apps-wonderful-ocean-0cf8f0210.yml"
   workflow_dispatch:
 
@@ -85,16 +85,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ./frontend/package-lock.json
+          cache-dependency-path: ./backend/frontend/package-lock.json
 
       - name: Install frontend dependencies and build client
         run: |
-          cd ./frontend
+          cd ./backend/frontend
           npm install
           npm run build
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip ./frontend/build
+        run: zip -r release.zip ./backend/frontend/build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -129,4 +129,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_OCEAN_0CF8F0210 }}
           action: 'upload'
-          app_location: './frontend/build'
+          app_location: './backend/frontend/build'
