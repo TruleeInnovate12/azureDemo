@@ -1,42 +1,56 @@
-   name: Azure Static Web Apps CI/CD
+name: Azure Static Web Apps CI/CD
 
-   on:
-     push:
-       branches:
-         - main
-     pull_request:
-       types: [opened, synchronize, reopened]
-       branches:
-         - main
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "my-app/backend/frontend/**"
+      - ".github/workflows/azure-static-web-apps-wonderful-ocean-0cf8f0210.yml"
+  workflow_dispatch:
 
-   jobs:
-     build_and_deploy_job:
-       runs-on: ubuntu-latest
-       name: Build and Deploy Job
-       steps:
-         - name: Checkout code
-           uses: actions/checkout@v2
+env:
+  NODE_VERSION: '20.17.0'
 
-         - name: Set up Node.js
-           uses: actions/setup-node@v3
-           with:
-             node-version: '16' # Use the Node.js version your project requires
+permissions:
+  contents: read
+  id-token: write
 
-         - name: Install dependencies
-           run: npm install
-           working-directory: my-app/backend/frontend # Adjust this path as needed
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: 
+      name: Production
+    defaults:
+      run:
+        working-directory: my-app/backend/frontend
+    steps:
+      - uses: actions/checkout@v2
 
-         - name: Build the project
-           run: npm run build
-           working-directory: my-app/backend/frontend # Adjust this path as needed
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: my-app/backend/frontend/package-lock.json
 
-         - name: Deploy to Azure Static Web Apps
-           id: builddeploy
-           uses: Azure/static-web-apps-deploy@v1
-           with:
-                azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_OCEAN_0CF8F0210 }}
-                repo_token: ${{ secrets.GITHUB_TOKEN }} # This is automatically provided by GitHub
-                action: 'upload'
-                app_location: 'my-app/backend/frontend/build' # Adjust this path as needed
-                api_location: 'api' # Location of your Azure Functions code (if any)
-                output_location: 'build' # Location of the build output directory
+      - name: npm install, build and test
+        run: |
+          npm install
+          npm run build
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+
+      - name: Deploy to Azure Static Web Apps
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_OCEAN_0CF8F0210 }}
+          action: 'upload'
+          app_location: 'my-app/backend/frontend/build'
