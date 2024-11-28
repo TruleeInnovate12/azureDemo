@@ -7,7 +7,7 @@ const port = process.env.PORT || 4041;
 app.use(cors());
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello World! this is updated on 10:40 pm');
 });
 
 app.get('/api/message', (req, res) => {
