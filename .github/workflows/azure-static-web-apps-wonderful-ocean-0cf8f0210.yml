@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "my-app/backend/frontend/**"
+      - "./Users/shaik/OneDrive/Desktop/azureDemo/my-app/backend/frontend/**"
       - ".github/workflows/azure-static-web-apps-wonderful-ocean-0cf8f0210.yml"
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ jobs:
       name: Production
     defaults:
       run:
-        working-directory: my-app/backend/frontend
+        working-directory: ./Users/shaik/OneDrive/Desktop/azureDemo/my-app/backend/frontend
     steps:
       - uses: actions/checkout@v2
 
@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: my-app/backend/package-lock.json
+          cache-dependency-path: ./Users/shaik/OneDrive/Desktop/azureDemo/my-app/backend/frontend/package-lock.json
 
       - name: npm install, build and test
         run: |
@@ -45,12 +45,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
-
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_OCEAN_0CF8F0210 }}
           action: 'upload'
-          app_location: 'my-app/backend/frontend/build'
+          app_location: './Users/shaik/OneDrive/Desktop/azureDemo/my-app/backend/frontend/build'
