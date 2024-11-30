@@ -14,7 +14,8 @@ import { ReactComponent as IoArrowBack } from "../../../../icons/IoArrowBack.svg
 import { ReactComponent as IoMdSearch } from "../../../../icons/IoMdSearch.svg";
 import { ReactComponent as FiFilter } from "../../../../icons/FiFilter.svg";
 import { ReactComponent as LuFilterX } from "../../../../icons/LuFilterX.svg";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { ReactComponent as IoIosArrowUp } from "../../../../icons/IoIosArrowUp.svg";
+import { ReactComponent as IoIosArrowDown } from "../../../../icons/IoIosArrowDown.svg";
 import { ReactComponent as MdKeyboardArrowUp } from "../../../../icons/MdKeyboardArrowUp.svg";
 import { ReactComponent as MdKeyboardArrowDown } from "../../../../icons/MdKeyboardArrowDown.svg";
 import { fetchMasterData } from "../../../../utils/fetchMasterData.js";

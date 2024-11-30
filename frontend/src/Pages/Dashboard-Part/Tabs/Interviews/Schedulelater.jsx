@@ -12,7 +12,8 @@ import Sidebar from "./Interviewers.jsx";
 import { ReactComponent as MdOutlineCancel } from "../../../../icons/MdOutlineCancel.svg";
 import { ReactComponent as MdArrowDropDown } from "../../../../icons/MdArrowDropDown.svg";
 import { ReactComponent as IoIosAddCircle } from "../../../../icons/IoIosAddCircle.svg";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { ReactComponent as IoIosArrowUp } from "../../../../icons/IoIosArrowUp.svg";
+import { ReactComponent as IoIosArrowDown } from "../../../../icons/IoIosArrowDown.svg";
 
 const Schedulelater = ({ onClose, sharingPermissions, onDataAdded }) => {
   const userName = Cookies.get("userName");

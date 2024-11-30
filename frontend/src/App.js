@@ -144,44 +144,56 @@ const App = () => {
           <Route path="/profile4" element={<Login4 />} />
 
           {/* home */}
-          <Route path="/AppViewMore" element={<AppViewMore />} />
-          <Route path="/notifications" element={<Notifications />} />
+          
+
+          {/* pending */}
+          {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/home" element={<Home sharingPermissions={sharingPermissions} freelancer={freelancer} objectPermissions={objectPermissions} />} />
           <Route path="/candidate" element={<Candidate />} />
           <Route path="/position" element={<Position />}  />
           <Route path="/assessment" element={<Assessment />} />
-          <Route path="/analytics" element={<Analytics objectPermissions={objectPermissions.analytics || {}} tabPermissions={tabPermissions.analytics || {}} sharingPermissions={sharingPermissions.analytics || {}} />} />
-          <Route path="/billing" element={<Billing />} />
+          {/* <Route path="/analytics" element={<Analytics objectPermissions={objectPermissions.analytics || {}} tabPermissions={tabPermissions.analytics || {}} sharingPermissions={sharingPermissions.analytics || {}} />} />
+          <Route path="/billing" element={<Billing />} /> */}
           <Route path="/interview-question" element={<QuestionBank objectPermissions={objectPermissions.questionBank || {}} sharingPermissions={sharingPermissions.questionBank || {}} />} />
-          <Route path="/newassessment" element={<NewAssessment />} />
+          
+
           {/* <Route path="/interviewcq" element={<Interviewcq />} /> */}
-          <Route path="/createCandidate" element={<CreateCandidate sharingPermissions={sharingPermissions} organization={organization} />} />
+
+{/* cleared */}
+          {/* <Route path="/createCandidate" element={<CreateCandidate sharingPermissions={sharingPermissions} organization={organization} />} /> */}
           <Route path="/team" element={<Team />} />
-          <Route path="/createTeams" element={<CreateTeams />} />
+          {/* <Route path="/createTeams" element={<CreateTeams />} /> */}
           <Route path="/outsourceoption" element={<OutsourceOption />} />
-          <Route path="/candidate-profiledetails" element={<CandidateProfileDetails />} />
-          <Route path="/position-profiledetails" element={<PositionProfileDetails />} />
-          <Route path="/team-profiledetails" element={<TeamProfileDetails />} />
-          <Route path="/interview-profiledetails" element={<InterviewProfileDetails />} />
+          {/* <Route path="/candidate-profiledetails" element={<CandidateProfileDetails />} /> */}
+          {/* <Route path="/position-profiledetails" element={<PositionProfileDetails />} /> */}
+          {/* <Route path="/team-profiledetails" element={<TeamProfileDetails />} /> */}
+          {/* <Route path="/interview-profiledetails" element={<InterviewProfileDetails />} /> */}
           {/* <Route path="/assessmentpopup" element={<AssessmentPopUp />} /> */}
-          <Route path="/schedulelater" element={<Schedulelater />} />
+
+          
+          {/* error */}
+          {/* <Route path="/schedulelater" element={<Schedulelater />} />
           <Route path="/schedulenow" element={<Schedulenow />} />
           <Route path="/newinterviewviewpage" element={<NewInterviewViewPage />} />
           <Route path="/newinterviewrequest" element={<NewInterviewRequest />} />
           <Route path="/internalprofiledetails" element={<Internalprofiledetails />} />
           <Route path="/internalinterview" element={<Internalinterview objectPermissions={objectPermissions.interviews || {}} tabPermissions={tabPermissions.interviews || {}} sharingPermissions={sharingPermissions || {}} />} />
           <Route path="/outsourceinterview" element={<Outsourceinterview objectPermissions={objectPermissions.interviews || {}} tabPermissions={tabPermissions.interviews || {}} sharingPermissions={sharingPermissions || {}} />} />
-          <Route path="/editcandidate" element={<EditCandidate />} />
-          <Route path="/editassessment" element={<EditAssessment />} />
+          <Route path="/editcandidate" element={<EditCandidate />} /> */}
+
+          {/* error */}
+          {/* <Route path="/editassessment" element={<EditAssessment />} />
           <Route path="/editteam" element={<EditTeam />} />
           <Route path="/editquestion" element={<EditQuestion />} />
           <Route path="/editpositionform" element={<Editpositionform />} />
           <Route path="/editinternallater" element={<Editinternallater />} />
-          <Route path="/mock-profiledetails" element={<MockProfileDetails />} />
-          <Route path="/mockinterview" element={<MockInterview objectPermissions={objectPermissions.mockInterviews || {}} sharingPermissions={sharingPermissions.mockInterviews || {}} />} />
+          <Route path="/mock-profiledetails" element={<MockProfileDetails />} /> */}
+          {/* <Route path="/mockinterview" element={<MockInterview objectPermissions={objectPermissions.mockInterviews || {}} sharingPermissions={sharingPermissions.mockInterviews || {}} />} />
           <Route path="/assessmenttest" element={<AssessmentTest />} />
           <Route path="/assessmenttext" element={<AssessmentText />} />
-          <Route path="/assessmentsubmit" element={<AssessmentSubmit />} />
+          <Route path="/assessmentsubmit" element={<AssessmentSubmit />} /> */}
+
+          {/* cleared */}
           {/* <Route path="/profile" element={<Profile />} /> */}
           <Route path="/availability" element={<Availability objectPermissions={objectPermissions.availability || {}} tabPermissions={tabPermissions.availability || {}} sharingPermissions={sharingPermissions.availability || {}} />} />
           <Route path="/billing_details" element={<Billingdetails />} />
@@ -195,6 +207,9 @@ const App = () => {
           <Route path="/sharing_rules" element={<SharingRules />} />
           <Route path="/task" element={<Task sharingPermissions={sharingPermissions} />} />
 
+          
+
+          {/* cleared */}
           {/* Start Interviews */}
           {/* <Route path="/candidatevc" element={<CandidateVC />} />
           <Route path="/videocallbutton" element={<VideoCallButton />} />
