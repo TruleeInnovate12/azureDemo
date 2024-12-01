@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./db.js');
-// const bcrypt = require('bcrypt');
 const { Candidate, CandidateHistory } = require('./models/candidate.js');
 const { Position, PositionHistory } = require('./models/position.js');
 const { Team, TeamHistory } = require('./models/team.js');
@@ -2574,9 +2573,6 @@ app.post('/organization', async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Hash the password
-    // const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     // Create a new organization
     const organization = new Organization({
       firstName,
@@ -2645,7 +2641,6 @@ app.post('/organization/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // const isPasswordValid = await bcrypt.compare(password, user.password);
     // if (!isPasswordValid) {
     //   return res.status(400).json({ message: 'Invalid email or password' });
     // }
