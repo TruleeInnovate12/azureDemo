@@ -1,8 +1,6 @@
-
-
 import React from "react";
 import { useState, useRef, useEffect } from "react";
-import { AiTwotoneDelete } from "react-icons/ai";
+// import { AiTwotoneDelete } from "react-icons/ai";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
@@ -715,7 +713,7 @@ const AddQuestion1 = ({ isOpen, onClose, sectionName, onQuestionAdded, selectedA
                           ) : (
                             <div className="flex gap-2 ml-2">
                               <button type="button" className="mt-2 p-1 bg-white" onClick={() => handleEditOption(index)}><FaRegEdit /></button>
-                              <button type="button" className="mt-2 p-1 bg-white" onClick={() => handleDeleteOption(index)}><AiTwotoneDelete /></button>
+                              {/* <button type="button" className="mt-2 p-1 bg-white" onClick={() => handleDeleteOption(index)}><AiTwotoneDelete /></button> */}
                             </div>
                           )}
                         </div>

@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, } from "react";
 import axios from "axios";
 import "../../../../index.css";
 import "../styles/tabs.scss";
 import Tooltip from "@mui/material/Tooltip";
-import Sidebar from "../QuestionBank-Tab/QuestionBank-Form.jsx";
-import QuestionBankProfileDetails from "./QuestionBankProfileDetails.jsx";
+// import Sidebar from "../QuestionBank-Tab/QuestionBank-Form.jsx";
+// import QuestionBankProfileDetails from "./QuestionBankProfileDetails.jsx";
 import { fetchMasterData } from "../../../../utils/fetchMasterData.js";
 import { fetchFilterData } from "../../../../utils/dataUtils.js";
 import Cookies from "js-cookie";
+import { usePermissions } from '../../../../PermissionsContext';
+import { useMemo } from 'react';
+
+
 
 import { ReactComponent as IoIosArrowBack } from "../../../../icons/IoIosArrowBack.svg";
 import { ReactComponent as IoIosArrowForward } from "../../../../icons/IoIosArrowForward.svg";
@@ -151,7 +155,11 @@ const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas, skills }) => {
   );
 };
 
-const QuestionBank = ({ objectPermissions, sharingPermissions }) => {
+const QuestionBank = () => {
+  const { sharingPermissionscontext, objectPermissionscontext } = usePermissions();
+  const sharingPermissions = useMemo(() => sharingPermissionscontext.questionBank || {}, [sharingPermissionscontext]);
+  const objectPermissions = useMemo(() => objectPermissionscontext.questionBank || {}, [objectPermissionscontext]);
+
   const [suggestedQuestionsCount, setSuggestedQuestionsCount] = useState({});
   const [favoriteQuestionsCount, setFavoriteQuestionsCount] = useState({});
   const [loading, setLoading] = useState(true);
@@ -773,22 +781,22 @@ useEffect(() => {
         </>
       )}
 
-      {selectedCandidate && (
+      {/* {selectedCandidate && (
         <QuestionBankProfileDetails
           questionProfile={selectedCandidate}
           onCloseprofile={handleCloseProfile}
           sharingPermissions={sharingPermissions}
         />
-      )}
+      )} */}
 
       {sidebarOpen && (
         <>
-          <Sidebar
+          {/* <Sidebar
             onClose={closeSidebar}
             onOutsideClick={handleOutsideClick}
             onDataAdded={handleDataAdded}
             hideSkillField={false} 
-          />
+          /> */}
         </>
       )}
 

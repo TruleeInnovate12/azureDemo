@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.f3c6cd5e.css",
-    "main.js": "/static/js/main.42c53e77.js",
+    "main.css": "/static/css/main.39b16a32.css",
+    "main.js": "/static/js/main.df82b0df.js",
     "static/media/image1.png": "/static/media/image1.46cc33de516ce7fe5544.png",
     "static/media/stars.png": "/static/media/stars.4cb35fef2323e1d1e949.png",
     "static/media/woman.png": "/static/media/woman.3f889d0af5f26871fbcc.png",
@@ -87,11 +87,11 @@
     "static/media/MdKeyboardArrowDown.svg": "/static/media/MdKeyboardArrowDown.5fbc9e0848ca508ffc5b646ec5fd3990.svg",
     "static/media/IoIosAdd.svg": "/static/media/IoIosAdd.49b29e63dab826ac24a165055fc70e82.svg",
     "static/media/MdKeyboardArrowUp.svg": "/static/media/MdKeyboardArrowUp.50d3b4e2daab2e565cf951966d148dd6.svg",
-    "main.f3c6cd5e.css.map": "/static/css/main.f3c6cd5e.css.map",
-    "main.42c53e77.js.map": "/static/js/main.42c53e77.js.map"
+    "main.39b16a32.css.map": "/static/css/main.39b16a32.css.map",
+    "main.df82b0df.js.map": "/static/js/main.df82b0df.js.map"
   },
   "entrypoints": [
-    "static/css/main.f3c6cd5e.css",
-    "static/js/main.42c53e77.js"
+    "static/css/main.39b16a32.css",
+    "static/js/main.df82b0df.js"
   ]
 }

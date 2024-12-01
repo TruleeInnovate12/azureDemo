@@ -2,10 +2,10 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import "../../../../index.css";
 import "../styles/tabs.scss";
 import Tooltip from "@mui/material/Tooltip";
-import PositionProfileDetails from "./PositionProfileDetails";
+// import PositionProfileDetails from "./PositionProfileDetails";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Position-Tab/Position-Form.jsx";
-import Editposition from "./Editpositionform.jsx";
+// import Sidebar from "../Position-Tab/Position-Form.jsx";
+// import Editposition from "./Editpositionform.jsx";
 import { fetchFilterData } from "../../../../utils/dataUtils.js";
 import { fetchMasterData } from '../../../../utils/fetchMasterData.js';
 import { usePermissions } from '../../../../PermissionsContext';
@@ -955,28 +955,28 @@ const Position = () => {
           </div>
         </section>
       )}
-      {selectedPosition && (
+      {/* {selectedPosition && (
         <PositionProfileDetails
           position={selectedPosition}
           onCloseprofile={handleCloseProfile}
         />
-      )}
-      {selectedcandidate && (
+      )} */}
+      {/* {selectedcandidate && (
         <Editposition
           onClose={handleclose}
           candidate1={selectedcandidate}
           rounds={selectedcandidate.rounds}
         />
-      )}
+      )} */}
       {sidebarOpen && (
         <>
           <div className={"fixed inset-0 bg-black bg-opacity-15 z-50"}>
             <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
-              <Sidebar
+              {/* <Sidebar
                 onClose={closeSidebar}
                 onOutsideClick={handleOutsideClick}
                 onPositionAdded={handlePositionAdded}
-              />
+              /> */}
             </div>
           </div>
         </>

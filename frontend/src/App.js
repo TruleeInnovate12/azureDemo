@@ -107,22 +107,22 @@ const App = () => {
   const [organization, setOrganization] = useState(false);
   const [freelancer, setFreelancer] = useState(false);
 
-  useEffect(() => {
-    initializeApp(setUserProfile, setUserRole, setSharingSettings, setOrganization, setFreelancer, setObjectPermissions, setTabPermissions, setSharingPermissions);
-    const ws = handleWebSocket(
-      'user',
-    );
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'user') {
-        initializeApp(setUserProfile, setUserRole, setSharingSettings, setOrganization, setFreelancer, setObjectPermissions, setTabPermissions, setSharingPermissions);
-      }
-    };
+  // useEffect(() => {
+  //   initializeApp(setUserProfile, setUserRole, setSharingSettings, setOrganization, setFreelancer, setObjectPermissions, setTabPermissions, setSharingPermissions);
+  //   const ws = handleWebSocket(
+  //     'user',
+  //   );
+  //   ws.onmessage = (event) => {
+  //     const message = JSON.parse(event.data);
+  //     if (message.type === 'user') {
+  //       initializeApp(setUserProfile, setUserRole, setSharingSettings, setOrganization, setFreelancer, setObjectPermissions, setTabPermissions, setSharingPermissions);
+  //     }
+  //   };
 
-    return () => {
-      ws.close();
-    };
-  }, []);
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, []);
 
   const [roomName] = useState('SampleRoom');
   const [displayName] = useState('John Doe');
@@ -154,7 +154,7 @@ const App = () => {
           <Route path="/assessment" element={<Assessment />} />
           {/* <Route path="/analytics" element={<Analytics objectPermissions={objectPermissions.analytics || {}} tabPermissions={tabPermissions.analytics || {}} sharingPermissions={sharingPermissions.analytics || {}} />} />
           <Route path="/billing" element={<Billing />} /> */}
-          <Route path="/interview-question" element={<QuestionBank objectPermissions={objectPermissions.questionBank || {}} sharingPermissions={sharingPermissions.questionBank || {}} />} />
+          <Route path="/interview-question" element={<QuestionBank />} />
           
 
           {/* <Route path="/interviewcq" element={<Interviewcq />} /> */}
