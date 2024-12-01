@@ -110,7 +110,7 @@ const PositionProfileDetails = ({ position, onCloseprofile }) => {
 
   useEffect(() => {
     fetchUserData();
-  }, [position.OwnerId]);
+  }, [fetchUserData]);
   const fetchUserData = async () => {
     setLoading(true);
     try {
