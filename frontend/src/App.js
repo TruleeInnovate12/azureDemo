@@ -388,8 +388,6 @@ const App = () => {
           <Route path="/profile4" element={<Login4 />} />
 
           {/* home */}
-
-          {/* pending */}
           {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/home" element={<Home sharingPermissions={sharingPermissions} freelancer={freelancer} objectPermissions={objectPermissions} />} />
           <Route path="/candidate" element={<Candidate />} />
