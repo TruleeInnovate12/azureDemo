@@ -1222,9 +1222,9 @@ const TeamDetails = ({ candidate, onCloseprofile }) => {
         )}
 
         {/* due to this build is not creating - mansoor */}
-        {showNewCandidateContent && (
+        {/* {showNewCandidateContent && (
           <EditTeamsForm onClose={handleclose} candidate1={candidate} />
-        )}
+        )} */}
       </div>
     </>
   );

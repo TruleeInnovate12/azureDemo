@@ -6,8 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import range from "lodash/range";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
-import Savenextpopup from "./Save_&_next_popup";
-import AddPositionForm from "../Position-Tab/Position-Form";
+// import Savenextpopup from "./Save_&_next_popup";
+// import AddPositionForm from "../Position-Tab/Position-Form";
 import { format, getYear } from 'date-fns';
 import { fetchFilterData } from '../../../../utils/dataUtils.js';
 import { fetchMasterData } from '../../../../utils/fetchMasterData.js';
@@ -1458,9 +1458,9 @@ const CreateCandidate = ({ onClose, onCandidateAdded, onDataAdded }) => {
         ) : (
           <>
 
-            {showNewPositionContent && (
+            {/* {showNewPositionContent && (
               <AddPositionForm onClose={handleclose} onPositionAdded={handleNewPositionAdded} />
-            )}
+            )} */}
 
           </>
         )}
@@ -1470,9 +1470,9 @@ const CreateCandidate = ({ onClose, onCandidateAdded, onDataAdded }) => {
 
       </div>
 
-      {showPopup && (
+      {/* {showPopup && (
         <Savenextpopup onClosepopup={onClosepopup} lastName={popupLastName} />
-      )}
+      )} */}
       {/* Confirmation Popup */}
       {showConfirmationPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50 z-50">

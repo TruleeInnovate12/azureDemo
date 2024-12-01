@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./db.js');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const { Candidate, CandidateHistory } = require('./models/candidate.js');
 const { Position, PositionHistory } = require('./models/position.js');
 const { Team, TeamHistory } = require('./models/team.js');
@@ -2575,7 +2575,7 @@ app.post('/organization', async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create a new organization
     const organization = new Organization({

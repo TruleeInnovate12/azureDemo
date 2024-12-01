@@ -5,7 +5,7 @@ import Tooltip from "@mui/material/Tooltip";
 import CandidateProfileDetails from "./CandidateProfileDetails";
 import Sidebar from "../Candidate-Tab/CreateCandidate";
 import Editcandidate from "./EditCandidate";
-import Savenextpopup from "./Save_&_next_popup";
+// import Savenextpopup from "./Save_&_next_popup";
 import maleImage from '../../../Dashboard-Part/Images/man.png';
 import femaleImage from '../../../Dashboard-Part/Images/woman.png';
 import genderlessImage from '../../../Dashboard-Part/Images/transgender.png';
@@ -907,9 +907,9 @@ const Candidate = ({ isAssessmentContext = false, onSelectCandidates }) => {
       {selectedcandidate && (
         <Editcandidate onClose={handleclose} candidate1={selectedcandidate} />
       )}
-      {showPopup && (
+      {/* {showPopup && (
         <Savenextpopup onClosepopup={onClosepopup} lastName={popupLastName} />
-      )}
+      )} */}
     </>
   );
 };

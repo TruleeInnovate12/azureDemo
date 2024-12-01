@@ -14,7 +14,7 @@ import femaleImage from "../../../Dashboard-Part/Images/woman.png";
 import genderlessImage from "../../../Dashboard-Part/Images/transgender.png";
 import Tooltip from "@mui/material/Tooltip";
 import Notification from "../Notifications/Notification.jsx";
-import { IoArrowBack } from "react-icons/io5";
+// import { IoArrowBack } from "react-icons/io5";
 
 import { ReactComponent as IoIosArrowUp } from "../../../../icons/IoIosArrowUp.svg";
 import { ReactComponent as IoIosArrowDown } from "../../../../icons/IoIosArrowDown.svg";
@@ -24,7 +24,7 @@ import { ReactComponent as FiMoreHorizontal } from "../../../../icons/FiMoreHori
 import { ReactComponent as IoMdSearch } from "../../../../icons/IoMdSearch.svg";
 import { ReactComponent as HiOutlineExclamationCircle } from "../../../../icons/HiOutlineExclamationCircle.svg";
 import { ReactComponent as FaTrash } from "../../../../icons/FaTrash.svg";
-import { MdOutlineContentCopy } from "react-icons/md";
+// import { MdOutlineContentCopy } from "react-icons/md";
 import { ReactComponent as MdMoreVert } from "../../../../icons/MdMoreVert.svg";
 
 const AssessmentPopup = ({ assessment, onCloseprofile }) => {
@@ -1940,13 +1940,13 @@ const AssessmentPopup = ({ assessment, onCloseprofile }) => {
                                       </a>
                                     </div>
                                     <div className="col-span-1 flex justify-end items-center">
-                                      <MdOutlineContentCopy
+                                      {/* <MdOutlineContentCopy
                                         onClick={() => handleCopyLink(link)}
                                         className={`ml-1 cursor-pointer ${isLinkCopied
                                           ? "text-custom-blue"
                                           : "text-gray-500"
                                           }`}
-                                      />
+                                      /> */}
                                       <p
                                         className="text-xs text-gray-500 ml-3 border p-1 rounded cursor-pointer hover:bg-gray-200"
                                         onClick={() =>
@@ -1985,7 +1985,7 @@ const AssessmentPopup = ({ assessment, onCloseprofile }) => {
                                 onClick={() => setSelectedCandidate(null)}
                                 className="flex items-center"
                               >
-                                <IoArrowBack className="mr-2" />
+                                {/* <IoArrowBack className="mr-2" /> */}
                               </button>
                               <p className="text-custom-blue font-semibold text-lg items-center">
                                 Results
