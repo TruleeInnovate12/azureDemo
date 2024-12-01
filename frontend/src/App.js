@@ -195,7 +195,7 @@ const App = () => {
 
           {/* cleared */}
           {/* <Route path="/profile" element={<Profile />} /> */}
-          <Route path="/availability" element={<Availability objectPermissions={objectPermissions.availability || {}} tabPermissions={tabPermissions.availability || {}} sharingPermissions={sharingPermissions.availability || {}} />} />
+          {/* <Route path="/availability" element={<Availability objectPermissions={objectPermissions.availability || {}} tabPermissions={tabPermissions.availability || {}} sharingPermissions={sharingPermissions.availability || {}} />} />
           <Route path="/billing_details" element={<Billingdetails />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/user_details" element={<UserDetails />} />
@@ -205,7 +205,7 @@ const App = () => {
           <Route path="/invoiceline" element={<InvoiceLine />} />
           <Route path="/all_sharing_settings" element={<AllSharingSettings />} />
           <Route path="/sharing_rules" element={<SharingRules />} />
-          <Route path="/task" element={<Task sharingPermissions={sharingPermissions} />} />
+          <Route path="/task" element={<Task sharingPermissions={sharingPermissions} />} /> */}
 
           
 
@@ -223,7 +223,7 @@ const App = () => {
           <Route path="/profilefromapps" element={<Profilefromapps />} /> */}
           <Route path="/admin" element={<Admin />} />
           <Route path="/price" element={<Price />} />
-          <Route path="/jitsimeetingstart" element={<JitsiMeeting roomName={roomName} displayName={displayName} />} />
+          {/* <Route path="/jitsimeetingstart" element={<JitsiMeeting roomName={roomName} displayName={displayName} />} /> */}
           <Route path="/organization" element={<Organization />} />
           {/* <Route path="/connected_apps" element={<Connected_apps />} />
           <Route path="/access_token" element={<Access_token />} />

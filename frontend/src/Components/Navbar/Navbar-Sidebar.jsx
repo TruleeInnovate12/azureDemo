@@ -70,7 +70,7 @@ const Navbar = () => {
     };
 
     fetchProfileImage();
-  }, []);
+  }, [userId]);
 
   const handleGettingToggle = () => {
     setIsGettingDropdownOpen(!isGettingDropdownOpen);
