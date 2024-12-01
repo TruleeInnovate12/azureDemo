@@ -11,7 +11,8 @@
     "server": "nodemon index.js",
     "frontend": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run frontend\"",
-     "build": "CI=false react-scripts build"
+     "build": "CI=false react-scripts build",
+      "clean-install": "rm -rf node_modules && npm install"
   },
   "dependencies": {
     "axios": "^1.7.2",
