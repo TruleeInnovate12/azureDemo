@@ -1,15 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import ErrorBoundary from '../../../ErrorBoundary.jsx';
 import { useState, useEffect } from "react";
-import axios from "axios";
-import React from 'react';
+// import axios from "axios";
+import React, { Suspense } from 'react';
 import "./Home.scss";
-import AppViewMore from "./AppViewMore";
-import CandidateProfileDetails from "../Tabs/Candidate-Tab/CandidateProfileDetails";
-import PositionProfileDetails from "../Tabs/Position-Tab/PositionProfileDetails";
-import TeamProfileDetails from "../Tabs/Team-Tab/TeamProfileDetails";
-import Internalprofiledetails from "../Tabs/Interviews/Internalprofiledetails";
 import { fetchMultipleData } from "../../../utils/dataUtils";
-import { fetchFilterData } from '../../../utils/dataUtils';
+// import { fetchFilterData } from '../../../utils/dataUtils';
 import { Bar } from 'react-chartjs-2';
 import { parse, isValid } from 'date-fns';
 import maleImage from '../../Dashboard-Part/Images/man.png';
@@ -19,6 +15,9 @@ import { useRef } from "react";
 import Sidebar from "../Dashboard/NewInterviewRequest";
 import Cookies from "js-cookie";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { usePermissions } from './../../../PermissionsContext';
+import { useMemo } from 'react';
+
 
 import { ReactComponent as LuFilter } from '../../../icons/LuFilter.svg';
 import { ReactComponent as FcBusinessman } from '../../../icons/FcBusinessman.svg';
@@ -38,9 +37,23 @@ import { ReactComponent as BsBuildingCheck } from '../../../icons/BsBuildingChec
 import { ReactComponent as MdOutlineSchedule } from '../../../icons/MdOutlineSchedule.svg';
 import { ReactComponent as FaArrowRight } from '../../../icons/FaArrowRight.svg';
 
+
+const AppViewMore = React.lazy(() => import('./AppViewMore'));
+const CandidateProfileDetails = React.lazy(() => import('../Tabs/Candidate-Tab/CandidateProfileDetails'));
+// const PositionProfileDetails = React.lazy(() => import('../Tabs/Position-Tab/PositionProfileDetails'));
+// const TeamProfileDetails = React.lazy(() => import('../Tabs/Team-Tab/TeamProfileDetails'));
+// const Internalprofiledetails = React.lazy(() => import('../Tabs/Interviews/Internalprofiledetails'));
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Home = ({ sharingPermissions, objectPermissions }) => {
+const Home = () => {
+  const { sharingPermissionscontext, objectPermissionscontext } = usePermissions();
+  const objectPermissionsCandidate = useMemo(() => objectPermissionscontext.candidate || {}, [objectPermissionscontext]);
+  const objectPermissionsPosition = useMemo(() => objectPermissionscontext.position || {}, [objectPermissionscontext]);
+  const objectPermissionsTeam = useMemo(() => objectPermissionscontext.team || {}, [objectPermissionscontext]);
+  const objectPermissionsInterviews = useMemo(() => objectPermissionscontext.interviews || {}, [objectPermissionscontext]);
+
+
   const freelancer = Cookies.get("freelancer");
 
   const apps = [
@@ -104,59 +117,57 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
   const [candidateData, setCandidateData] = useState([]);
   const [teamsData, setTeamsData] = useState([]);
   const [interviewData, setInterviewData] = useState([]);
-  const [skillsData, setSkillsData] = useState([]);
   const [lastFetchedCandidates, setLastFetchedCandidates] = useState([]);
   const [lastFetchedPositions, setLastFetchedPositions] = useState([]);
   const [lastFetchedTeams, setLastFetchedTeams] = useState([]);
   const [lastFetchedInterviews, setLastFetchedInterviews] = useState([]);
   const [notificationsData, setNotificationsData] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const requests = [
-  //         { endpoint: 'candidate', sharingPermissions: sharingPermissions.candidate },
-  //         { endpoint: 'position', sharingPermissions: sharingPermissions.position },
-  //         { endpoint: 'team', sharingPermissions: sharingPermissions.team },
-  //         { endpoint: 'interview', sharingPermissions: sharingPermissions.interviews }
-  //       ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const requests = [
+          { endpoint: 'candidate', sharingPermissions: sharingPermissionscontext.candidate },
+          { endpoint: 'position', sharingPermissions: sharingPermissionscontext.position },
+          { endpoint: 'team', sharingPermissions: sharingPermissionscontext.team },
+          { endpoint: 'interview', sharingPermissions: sharingPermissionscontext.interviews }
+        ];
 
-  //       const [candidates, positions, teams, interviews] = await fetchMultipleData(requests);
+        const [candidates, positions, teams, interviews] = await fetchMultipleData(requests);
 
-  //       const sortedCandidates = candidates.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //       if (sortedCandidates.length > 0 && sortedCandidates[0].createdAt !== lastFetchedCandidates[0]?.createdAt) {
-  //         setCandidateData(sortedCandidates);
-  //         setLastFetchedCandidates(sortedCandidates);
-  //       }
+        const sortedCandidates = candidates.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (sortedCandidates.length > 0 && sortedCandidates[0].createdAt !== lastFetchedCandidates[0]?.createdAt) {
+          setCandidateData(sortedCandidates);
+          setLastFetchedCandidates(sortedCandidates);
+        }
 
-  //       const sortedPositions = positions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //       if (sortedPositions.length > 0 && sortedPositions[0].createdAt !== lastFetchedPositions[0]?.createdAt) {
-  //         setSkillsData(sortedPositions);
-  //         setLastFetchedPositions(sortedPositions);
-  //       }
+        const sortedPositions = positions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (sortedPositions.length > 0 && sortedPositions[0].createdAt !== lastFetchedPositions[0]?.createdAt) {
+          setLastFetchedPositions(sortedPositions);
+        }
 
-  //       const sortedTeams = teams.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //       if (sortedTeams.length > 0 && sortedTeams[0].createdAt !== lastFetchedTeams[0]?.createdAt) {
-  //         setTeamsData(sortedTeams);
-  //         setLastFetchedTeams(sortedTeams);
-  //       }
+        const sortedTeams = teams.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (sortedTeams.length > 0 && sortedTeams[0].createdAt !== lastFetchedTeams[0]?.createdAt) {
+          setTeamsData(sortedTeams);
+          setLastFetchedTeams(sortedTeams);
+        }
 
-  //       const sortedInterviews = interviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //       if (sortedInterviews[0].createdAt !== lastFetchedInterviews[0]?.createdAt) {
-  //         setInterviewData(sortedInterviews);
-  //         setLastFetchedInterviews(sortedInterviews);
-  //       }
+        const sortedInterviews = interviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (sortedInterviews[0].createdAt !== lastFetchedInterviews[0]?.createdAt) {
+          setInterviewData(sortedInterviews);
+          setLastFetchedInterviews(sortedInterviews);
+        }
 
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, [sharingPermissions]);
+    fetchData();
+  }, [sharingPermissionscontext, lastFetchedCandidates, lastFetchedPositions, lastFetchedTeams, lastFetchedInterviews]);
 
   // useEffect(() => {
   //   const fetchNotificationData = async () => {
@@ -228,7 +239,6 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
 
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [roundsData, setRoundsData] = useState({});
-  const interviewPermissions = sharingPermissions.interviews || {};
 
   // useEffect(() => {
   //   const fetchRoundsData = async (roundIds) => {
@@ -382,7 +392,7 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   const handleCandidateClick = (candidate) => {
-    if (objectPermissions.candidate?.View) {
+    if (objectPermissionsCandidate.candidate?.View) {
       setSelectedCandidate(candidate);
     } else {
       console.warn("Candidate data is not available or view permission is not available.");
@@ -397,7 +407,7 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
   const [selectedPosition, setSelectedPosition] = useState(null);
 
   const handlePositionClick = (position) => {
-    if (objectPermissions.position?.View) {
+    if (objectPermissionsPosition.position?.View) {
       setSelectedPosition(position);
     } else {
       console.warn("Position data is not available or view permission is not available.");
@@ -412,7 +422,7 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
   const [selectedTeam, setSelectedTeam] = useState(null);
 
   const handleTeamClick = (team) => {
-    if (objectPermissions.team?.View) {
+    if (objectPermissionsTeam.team?.View) {
       setSelectedTeam(team);
     } else {
       console.warn("Team data is not available or view permission is not available.");
@@ -428,7 +438,7 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
 
 
   const handleInterviewClick = async (interview) => {
-    if (objectPermissions.interviews?.View) {
+    if (objectPermissionsInterviews.interviews?.View) {
       setSelectedInterview(interview);
     }
   };
@@ -700,181 +710,206 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
     setSidebarOpen(false);
   };
   return (
-
-    <>
-
-      <div className="lg:mx-auto lg:container xl:mx-auto xl:container 2xl:mx-auto 2xl:container mb-5">
-        <div className="sm:py-0 sm:mx-0 md:mx-0">
-          {freelancer && (
-            <div className=" sm:mx-0 md:mx-0">
-              <div className="mb-5">
-                <div className="py-3">
-                  <div className="flex justify-between items-center mb-2 mx-4">
-                    <p className="font-bold text-lg">New Interview Requests</p>
-                    <div className="flex items-center gap-2">
+    <ErrorBoundary>
+      <div>
+        <div className="lg:mx-auto lg:container xl:mx-auto xl:container 2xl:mx-auto 2xl:container mb-5">
+          <div className="sm:py-0 sm:mx-0 md:mx-0">
+            {freelancer && (
+              <div className=" sm:mx-0 md:mx-0">
+                <div className="mb-5">
+                  <div className="py-3">
+                    <div className="flex justify-between items-center mb-2 mx-4">
+                      <p className="font-bold text-lg">New Interview Requests</p>
+                      <div className="flex items-center gap-2">
                         <p><LuFilter /></p>
-                      <span className="cursor-pointer text-2xl" onClick={handleViewMoreRequestClick}><FiMoreHorizontal /></span>
-                    </div>
-                  </div>
-                  {isPopupOpenRequest && (
-                    <div className="absolute right-4 -mt-3 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button
-                        onClick={handleClick}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                      >
-                        View All
-                      </button>
-                    </div>
-                  )}
-                  <div className="border rounded-md p-3 mx-3 bg-[#F5F9FA]">
-                    <div className="grid grid-cols-4 sm:grid-cols-1 md:grid-cols-1 gap-4">
-                      {interviewData.slice(0, 4).map((interview, index) => (
-                        <div className="border bg-white shadow rounded-md p-2">
-                          <div className="flex items-center gap-4 text-sm">
-                            <div>
-                              <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
-                            </div>
-                            <div>
-                              <p className="cursor-pointer text-custom-blue">
-                                Senior Java Developer
-                              </p>
-                              <p>30 Oct, 2024 . 10:00 AM</p>
-                              <p>Java, Node JS</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-              {sidebarOpen && (
-                <div>
-                  <Sidebar onClose={closeSidebar} onOutsideClick={handleOutsideClick} />
-                </div>
-              )}
-            </div>
-          )}
-          <div className="grid grid-cols-9 gap-1 mx-2 sm:mx-0 md:mx-0">
-            {/* left column */}
-            <div className="col-span-2 sm:hidden md:hidden sm:col-span-9 md:col-span-9 w-[94%] p-2 rounded-md">
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-bold text-lg">Tabs</p>
-                <span className="cursor-pointer text-2xl" onClick={handleViewMoreClick}><MdMoreVert /></span>
-              </div>
-              {isPopupOpen && (
-                <div className="absolute left-52 -mt-2 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                  <button
-                    onClick={handleViewButtonClick}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                  >
-                    View All
-                  </button>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 gap-4">
-                {apps.map((app, index) => (
-                  <div
-                    key={index}
-                    className="p-1 rounded-md shadow-md hover:shadow-lg border border-[#217989] flex flex-col bg-[#217989] bg-opacity-5"
-                  >
-                    <NavLink to={app.to} className="flex-grow">
-                      <div className="grid grid-cols-5 cursor-pointer gap-1 h-full">
-                        <div className="col-span-1 flex items-center px-2">
-                          {app.icon}
-                        </div>
-                        <div className="col-span-4 flex items-center">
-                          <div>
-                            <p className="text-sm font-bold text-black">{app.title}</p>
-                            <p className="text-sm text-black line-clamp-2">{app.description}</p>
-                          </div>
-                        </div>
+                        <span className="cursor-pointer text-2xl" onClick={handleViewMoreRequestClick}><FiMoreHorizontal /></span>
                       </div>
-                    </NavLink>
-                  </div>
-                ))}
-              </div>
+                    </div>
+                    {isPopupOpenRequest && (
+                      <div className="absolute right-4 -mt-3 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={handleClick}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    )}
+                    <div className="border rounded-md p-3 mx-3 bg-[#F5F9FA]">
+                      <div className="grid grid-cols-4 sm:grid-cols-1 md:grid-cols-1 gap-4">
+                        {interviewData.slice(0, 4).map((interview, index) => (
+                          <div className="border bg-white shadow rounded-md p-2">
+                            <div className="flex items-center gap-4 text-sm">
+                              <div>
+                                <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
+                              </div>
+                              <div>
+                                <p className="cursor-pointer text-custom-blue">
+                                  Senior Java Developer
+                                </p>
+                                <p>30 Oct, 2024 . 10:00 AM</p>
+                                <p>Java, Node JS</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-              {/* newly added */}
-              <div className="border mt-9 rounded-md border-[#217989]">
-                <div className="bg-[#217989] bg-opacity-5 p-2 rounded-md">
-                  <p className="mb-2 font-bold">Newly added</p>
-                  <div className="flex gap-5 mb-2 text-2xl">
-                    <div className="font-bold w-9"><MdOutlineContactPage /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {candidateData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleCandidateClick(candidateData[0])}>
-                              {candidateData[0].LastName}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
                   </div>
-                  <div className="flex gap-5 mb-2 text-2xl">
-                    <div className="font-bold w-9"><FaBuildingUser /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {lastFetchedPositions.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handlePositionClick(lastFetchedPositions[0])}>
-                              {lastFetchedPositions[0].title}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
+                </div>
+                {sidebarOpen && (
+                  <div>
+                    <Sidebar onClose={closeSidebar} onOutsideClick={handleOutsideClick} />
                   </div>
-                  <div className="flex gap-5 mb-2 text-2xl">
-                    <div className="font-bold w-9"><BsBuildingCheck /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {teamsData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleTeamClick(teamsData[0])}>
-                              {teamsData[0].LastName}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
+                )}
+              </div>
+            )}
+            <div className="grid grid-cols-9 gap-1 mx-2 sm:mx-0 md:mx-0">
+              {/* left column */}
+              <div className="col-span-2 sm:hidden md:hidden sm:col-span-9 md:col-span-9 w-[94%] p-2 rounded-md">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="font-bold text-lg">Tabs</p>
+                  <span className="cursor-pointer text-2xl" onClick={handleViewMoreClick}><MdMoreVert /></span>
+                </div>
+                {isPopupOpen && (
+                  <div className="absolute left-52 -mt-2 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                    <button
+                      onClick={handleViewButtonClick}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                    >
+                      View All
+                    </button>
                   </div>
-                  <div className="flex gap-5 text-2xl">
-                    <div className="font-bold w-9"><MdOutlineSchedule /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {interviewData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interviewData[0])}>
-                              {interviewData[0].Candidate}
-                            </p>
-                          )}
-                        </>
-                      )}
+                )}
+
+                <div className="grid grid-cols-1 gap-4">
+                  {apps.map((app, index) => (
+                    <div
+                      key={index}
+                      className="p-1 rounded-md shadow-md hover:shadow-lg border border-[#217989] flex flex-col bg-[#217989] bg-opacity-5"
+                    >
+                      <NavLink to={app.to} className="flex-grow">
+                        <div className="grid grid-cols-5 cursor-pointer gap-1 h-full">
+                          <div className="col-span-1 flex items-center px-2">
+                            {app.icon}
+                          </div>
+                          <div className="col-span-4 flex items-center">
+                            <div>
+                              <p className="text-sm font-bold text-black">{app.title}</p>
+                              <p className="text-sm text-black line-clamp-2">{app.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </NavLink>
+                    </div>
+                  ))}
+                </div>
+
+                {/* newly added */}
+                <div className="border mt-9 rounded-md border-[#217989]">
+                  <div className="bg-[#217989] bg-opacity-5 p-2 rounded-md">
+                    <p className="mb-2 font-bold">Newly added</p>
+                    <div className="flex gap-5 mb-2 text-2xl">
+                      <div className="font-bold w-9"><MdOutlineContactPage /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {candidateData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleCandidateClick(candidateData[0])}>
+                                {candidateData[0].LastName}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-5 mb-2 text-2xl">
+                      <div className="font-bold w-9"><FaBuildingUser /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {lastFetchedPositions.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handlePositionClick(lastFetchedPositions[0])}>
+                                {lastFetchedPositions[0].title}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-5 mb-2 text-2xl">
+                      <div className="font-bold w-9"><BsBuildingCheck /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {teamsData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleTeamClick(teamsData[0])}>
+                                {teamsData[0].LastName}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-5 text-2xl">
+                      <div className="font-bold w-9"><MdOutlineSchedule /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {interviewData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interviewData[0])}>
+                                {interviewData[0].Candidate}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Middle content */}
-            <div className="col-span-5 sm:col-span-9 md:col-span-9 space-y-4 p-2 sm:bg-white bg-[#217989] bg-opacity-5 h-[200vh] -mt-4 pt-11 -mb-8 -ml-5 sm:ml-0 -mr-1 sm:mr-0">
+              {/* Middle content */}
+              <div className="col-span-5 sm:col-span-9 md:col-span-9 space-y-4 p-2 sm:bg-white bg-[#217989] bg-opacity-5 h-[200vh] -mt-4 pt-11 -mb-8 -ml-5 sm:ml-0 -mr-1 sm:mr-0">
 
-              {/* for mobile view noshow, scheduled, completed, cancelled */}
-              <div className="flex justify-center">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:hidden xl:hidden 2xl:hidden">
+                {/* for mobile view noshow, scheduled, completed, cancelled */}
+                <div className="flex justify-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:hidden xl:hidden 2xl:hidden">
+                    <div className="border rounded-md bg-[#F8D598] w-32">
+                      <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
+                      <p className="text-center mt-5 ml-7 text-4xl">{noShowCount}</p>
+                      <p className="text-center pb-3 text-lg">No Show</p>
+                    </div>
+                    <div className="border rounded-md bg-[#AAC2ED] w-32">
+                      <p className="text-2xl inline -ml-10 float-end mt-1"><MdMoreVert /></p>
+                      <p className="text-center mt-5 text-4xl">{scheduledCount}</p>
+                      <p className="text-center pb-3 text-lg">Scheduled</p>
+                    </div>
+                    <div className="border rounded-md bg-[#CEA0EB] w-32">
+                      <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
+                      <p className="text-center mt-5 ml-6 text-4xl">{completedCount}</p>
+                      <p className="text-center pb-3 text-lg">Completed</p>
+                    </div>
+                    <div className="border rounded-md bg-[#A0E2EC] w-32">
+                      <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
+                      <p className="text-center mt-5 ml-6 text-4xl">{cancelledCount}</p>
+                      <p className="text-center pb-3 text-lg">Cancelled</p>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* main status */}
+                <div className="flex justify-between sm:hidden md:hidden">
                   <div className="border rounded-md bg-[#F8D598] w-32">
                     <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
                     <p className="text-center mt-5 ml-7 text-4xl">{noShowCount}</p>
@@ -897,371 +932,22 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
                   </div>
 
                 </div>
-              </div>
-
-              {/* main status */}
-              <div className="flex justify-between sm:hidden md:hidden">
-                <div className="border rounded-md bg-[#F8D598] w-32">
-                  <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
-                  <p className="text-center mt-5 ml-7 text-4xl">{noShowCount}</p>
-                  <p className="text-center pb-3 text-lg">No Show</p>
-                </div>
-                <div className="border rounded-md bg-[#AAC2ED] w-32">
-                  <p className="text-2xl inline -ml-10 float-end mt-1"><MdMoreVert /></p>
-                  <p className="text-center mt-5 text-4xl">{scheduledCount}</p>
-                  <p className="text-center pb-3 text-lg">Scheduled</p>
-                </div>
-                <div className="border rounded-md bg-[#CEA0EB] w-32">
-                  <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
-                  <p className="text-center mt-5 ml-6 text-4xl">{completedCount}</p>
-                  <p className="text-center pb-3 text-lg">Completed</p>
-                </div>
-                <div className="border rounded-md bg-[#A0E2EC] w-32">
-                  <span className="text-2xl float-end mt-1"><MdMoreVert /></span>
-                  <p className="text-center mt-5 ml-6 text-4xl">{cancelledCount}</p>
-                  <p className="text-center pb-3 text-lg">Cancelled</p>
-                </div>
-
-              </div>
-              {/* reports */}
-              <div className="container mx-auto mb-5">
-                <div className="py-3 mx-2 sm:mx-0 md:mx-0">
-                  <h2 className="font-bold text-lg mb-2">Reports</h2>
-                  <Bar data={data} options={options} />
-                </div>
-              </div>
-              {/* Interview Feedback */}
-              <div className="sm:hidden md:hidden">
-                <p className="font-bold text-lg mb-2">Interview Feedback</p>
-                <div className="flex justify-between">
-                  {sortedInterviews.slice(0, 3).map((interview, index) => {
-                    const round = roundsData[interview.rounds[0]];
-                    if (round) {
-                      const dateOnly = round.dateTime.split(' ')[0];
-
-                      let statusTextColor;
-                      switch (interview.Status) {
-                        case 'Reschedule':
-                          statusTextColor = 'text-violet-500';
-                          break;
-                        case 'Scheduled':
-                          statusTextColor = 'text-yellow-300';
-                          break;
-                        case 'ScheduleCancel':
-                          statusTextColor = 'text-red-500';
-                          break;
-                        default:
-                          statusTextColor = 'text-black';
-                      }
-
-                      return (
-                        <div key={index} className="border rounded-md border-[#217989] w-48 bg-white">
-                          <div className="flex justify-between border-b text-sm p-2">
-                            <p>{dateOnly}</p>
-                            <p className="font-semibold text-green-600">Completed</p>
-                          </div>
-                          <div className="flex flex-col items-center py-3">
-                            {interview.candidate?.imageUrl ? (
-                              <img
-                                src={interview.candidate.imageUrl}
-                                alt="Candidate"
-                                className="w-12 h-12 rounded-full"
-                              />
-                            ) : (
-                              interview.candidate?.Gender === "Male" ? (
-                                <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
-                              ) : interview.candidate?.Gender === "Female" ? (
-                                <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
-                              ) : (
-                                <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
-                              )
-                            )}
-                            <p className="text-center">{interview.Candidate}</p>
-                            <p className="text-center">{interview.Position}</p>
-                          </div>
-                          <div className="flex justify-between p-2">
-                            <button className="border rounded-md border-[#217989] px-2">MSG</button>
-                            <button className="border rounded-md border-[#217989] px-2">Email</button>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-
-                </div>
-              </div>
-              {/* notifications */}
-              <div className="border rounded-md border-[#217989] bg-white sm:hidden md:hidden">
-                <div className="flex justify-between p-3 items-center">
-                  <p className="font-bold text-lg">Notifications</p>
-                  <div className="cursor-pointer text-2xl flex items-center gap-2">
-                    <p style={{ fontSize: "1.2rem" }} onClick={handleFilterNotificationClick}><LuFilter /></p>
-                    <p onClick={handleMoreNotificationClick}><FiMoreHorizontal /></p>
+                {/* reports */}
+                <div className="container mx-auto mb-5">
+                  <div className="py-3 mx-2 sm:mx-0 md:mx-0">
+                    <h2 className="font-bold text-lg mb-2">Reports</h2>
+                    <Bar data={data} options={options} />
                   </div>
-                  {isPopupNotificationOpen && (
-                    <div className="absolute right-80 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button
-                        onClick={handleViewNotificationClick}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                      >
-                        View All
-                      </button>
-                    </div>
-                  )}
-                  {openPopup === 'notification' && (
-                    <div className="absolute right-80 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisWeek')}>This Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('nextWeek')}>Next Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisMonth')}>This Month</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('all')}>All</button>
-                    </div>
-                  )}
                 </div>
-                {filteredNotifications.length === 0 ? (
-                  <p className="text-center p-3">No data found.</p>
-                ) : (
-                  filteredNotifications.slice(0, 3).map((notification, i) => (
-                    <div
-                      key={i}
-                      className="flex text-sm border-b w-full justify-between"
-                    >
-                      <div className="flex item-center mt-2">
-                        <div className="w-10 ml-3 mt-1">
-                          <img className="w-5 h-5" src="https://cdn-icons-png.flaticon.com/256/6577/6577277.png" alt="" />
-                        </div>
-                        <div>
-                          <p className="font-bold">
-                            {notification.Status === "Scheduled"
-                              ? "Interview Scheduled"
-                              : "New Interview Requests"}
-                          </p>
-                          <p>{notification.Body}</p>
-                          <p className="mb-2">{notification.CreatedDate}</p>
-                        </div>
-                      </div>
-                      <div className="text-xl mt-12 mr-2">
-                        <FaArrowRight />
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Right column */}
-            <div className="col-span-2 sm:col-span-9 sm:-mt-[80rem] sm:mx-2 md:-mt-[92rem] md:mx-2 md:col-span-9 p-2 rounded-md">
-              {/* upcoming interviews */}
-              <div className="space-y-5 mb-10">
-                <div className="flex justify-between p-1 items-center">
-                  <p className="font-bold text-md">Upcoming Interviews</p>
-                  <div className="cursor-pointer text-2xl flex items-center gap-1">
-                    <p style={{ fontSize: "1.2rem" }} onClick={handleFilterUpcomingInterviewsClick}><LuFilter /></p>
-                    <p onClick={handleMoreUpcomingInterviewsClick}><FiMoreHorizontal /></p>
-                  </div>
-                  {isPopupUpcomingInterviewsOpen && (
-                    <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button
-                        onClick={handleViewUpcomingInterviewsButtonClick}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                      >
-                        View All
-                      </button>
-                    </div>
-                  )}
-                  {openPopup === 'upcomingInterviews' && (
-                    <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('thisWeek')}>This Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('nextWeek')}>Next Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('thisMonth')}>This Month</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('all')}>All</button>
-                    </div>
-                  )}
-                </div>
-
-                {filteredInterviews.length === 0 ? (
-                  <p className="text-center p-3">No data found.</p>
-                ) : (
-                  filteredInterviews.slice(0, 3).map((interview, index) => {
-                    const round = roundsData[interview.rounds[0]];
-                    if (round) {
-                      let statusTextColor;
-                      switch (interview.Status) {
-                        case 'Reschedule':
-                          statusTextColor = 'text-violet-500';
-                          break;
-                        case 'Scheduled':
-                          statusTextColor = 'text-yellow-300';
-                          break;
-                        case 'ScheduleCancel':
-                          statusTextColor = 'text-red-500';
-                          break;
-                        default:
-                          statusTextColor = 'text-black';
-                      }
-
-                      return (
-                        <div key={index} className="border border-[#217989] bg-[#217989] shadow rounded-md bg-opacity-5 mb-2">
-                          <div className="border-b border-gray-400 px-2 flex justify-between items-center">
-                            <p className="text-sm">{displayDateTime(round.dateTime)}</p>
-                            <p className={statusTextColor}>{interview.Status}</p>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm p-2">
-                            <div>
-                              {interview.candidate?.imageUrl ? (
-                                <img
-                                  src={interview.candidate.imageUrl}
-                                  alt="Candidate"
-                                  className="w-12 h-12 rounded-full"
-                                />
-                              ) : (
-                                interview.candidate?.Gender === "Male" ? (
-                                  <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
-                                ) : interview.candidate?.Gender === "Female" ? (
-                                  <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
-                                ) : (
-                                  <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
-                                )
-                              )}
-                              <img className="w-5 h-5 rounded-full ml-9 -mt-5" src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_hybrid" alt="" />
-                            </div>
-                            <div>
-                              <p>{interview.Position}</p>
-                              <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interview)}>{interview.Candidate}</p>
-                              <p>Interviewers: Arjun</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })
-                )}
-
-              </div>
-              {/* tasks */}
-              <div className="border rounded-md border-[#217989] bg-[#217989] bg-opacity-5 mb-8">
-                <div className="border-b border-gray-400">
-                  <div className="flex p-2 justify-between items-center">
-                    <p className="font-bold text-md">Tasks</p>
-                    <div className="cursor-pointer text-2xl flex items-center gap-1">
-                      <p style={{ fontSize: "1.2rem" }} onClick={handleFilterTasksClick}><LuFilter /></p>
-                      <p onClick={handleMoreTasksClick}><FiMoreHorizontal /></p>
-                    </div>
-                    {isPopupTasksOpen && (
-                      <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                        <button
-                          onClick={handleViewTasksButtonClick}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                        >
-                          View All
-                        </button>
-                      </div>
-                    )}
-                    {openPopup === 'tasks' && (
-                      <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('thisWeek')}>This Week</button>
-                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('nextWeek')}>Next Week</button>
-                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('thisMonth')}>This Month</button>
-                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('all')}>All</button>
-                      </div>
-                    )}
-                  </div>
-                  {loading ? (
-                    <p className="text-center p-3">Loading tasks...</p>
-                  ) : filteredTasks.length === 0 ? (
-                    <p className="text-center p-3">No tasks available.</p>
-                  ) : (
-                    filteredTasks.slice(0, 2).map((task, index) => (
-                      <div key={index}>
-                        <p className="text-center p-3 text-custom-blue font-bold">{task.title}</p>
-                        <div className="flex justify-between p-2">
-                          <p className="text-custom-blue">{task.assignedTo}</p>
-                          <p>{new Date(task.dueDate).toLocaleDateString()}</p>
-                        </div>
-                        <div className="flex justify-between p-2">
-                          <p>{task.priority}</p>
-                          <p>{task.status}</p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-              {/* interviewers */}
-              <div className="space-y-5">
-                <div className="flex justify-between p-1 -mb-2 items-center">
-                  <p className="font-bold text-md">Interviewers</p>
-                  <div className="cursor-pointer text-2xl flex items-center gap-1">
-                    <p style={{ fontSize: "1.2rem" }} onClick={handleFilterOutsourceInterviewsClick}><LuFilter /></p>
-                    <p onClick={handleMoreOutsourceInterviewsClick}><FiMoreHorizontal /></p>
-                  </div>
-                  {isPopupOutsourceInterviewsOpen && (
-                    <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button
-                        onClick={handleViewOutsourceInterviewsButtonClick}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                      >
-                        View All
-                      </button>
-                    </div>
-                  )}
-                  {openPopup === 'outsourceInterviews' && (
-                    <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('thisWeek')}>This Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('nextWeek')}>Next Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('thisMonth')}>This Month</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('all')}>All</button>
-                    </div>
-                  )}
-                </div>
-                {loading ? (
-                  <p>Loading...</p>
-                ) : filteredOutsourceInterviews.length === 0 ? (
-                  <p className="text-center p-3">No data found.</p>
-                ) : (
-                  filteredOutsourceInterviews.slice(0, 3).map((interview, index) => (
-                    <div key={index} className="border border-[#217989] bg-[#217989] shadow rounded-md p-2 bg-opacity-5 mb-2">
-                      <div className="flex items-center gap-3 text-sm">
-                        <div>
-                          {interview.candidate?.imageUrl ? (
-                            <img
-                              src={interview.candidate.imageUrl}
-                              alt="Candidate"
-                              className="w-12 h-12 rounded-full"
-                            />
-                          ) : (
-                            interview.candidate?.Gender === "Male" ? (
-                              <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
-                            ) : interview.candidate?.Gender === "Female" ? (
-                              <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
-                            ) : (
-                              <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
-                            )
-                          )}
-                        </div>
-                        <div>
-                          <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interview)}>
-                            {interview.Candidate}
-                          </p>
-                          <p>{interview.Position}</p>
-                          <p>{new Date(interview.createdAt).toLocaleString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Interview Feedback only in mobile view */}
-              <div className="lg:hidden xl:hidden 2xl:hidden sm:mx-[1px] sm:mt-8 sm:mb-12 md:mx-[1px] md:mt-8 md:mb-12">
-                <p className="font-bold text-lg mb-5">Interview Feedback</p>
-                <div className="sm:flex sm:justify-center md:flex md:justify-center">
-                  <div className="sm:space-y-5 md:grid md:grid-cols-2 md:gap-6">
-                    {sortedInterviews.slice(0, 2).map((interview, index) => {
+                {/* Interview Feedback */}
+                <div className="sm:hidden md:hidden">
+                  <p className="font-bold text-lg mb-2">Interview Feedback</p>
+                  <div className="flex justify-between">
+                    {sortedInterviews.slice(0, 3).map((interview, index) => {
                       const round = roundsData[interview.rounds[0]];
                       if (round) {
                         const dateOnly = round.dateTime.split(' ')[0];
+
                         let statusTextColor;
                         switch (interview.Status) {
                           case 'Reschedule':
@@ -1278,25 +964,25 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
                         }
 
                         return (
-                          <div key={index} className="border rounded-md border-[#217989] w-56 bg-white">
+                          <div key={index} className="border rounded-md border-[#217989] w-48 bg-white">
                             <div className="flex justify-between border-b text-sm p-2">
                               <p>{dateOnly}</p>
-                              <p className={`font-semibold ${statusTextColor}`}>{interview.Status}</p>
+                              <p className="font-semibold text-green-600">Completed</p>
                             </div>
                             <div className="flex flex-col items-center py-3">
                               {interview.candidate?.imageUrl ? (
                                 <img
                                   src={interview.candidate.imageUrl}
                                   alt="Candidate"
-                                  className="w-12 h-12"
+                                  className="w-12 h-12 rounded-full"
                                 />
                               ) : (
                                 interview.candidate?.Gender === "Male" ? (
-                                  <img src={maleImage} alt="Male Avatar" className="w-12 h-12" />
+                                  <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
                                 ) : interview.candidate?.Gender === "Female" ? (
-                                  <img src={femaleImage} alt="Female Avatar" className="w-12 h-12" />
+                                  <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
                                 ) : (
-                                  <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12" />
+                                  <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
                                 )
                               )}
                               <p className="text-center">{interview.Candidate}</p>
@@ -1311,164 +997,495 @@ const Home = ({ sharingPermissions, objectPermissions }) => {
                       }
                       return null;
                     })}
+
                   </div>
+                </div>
+                {/* notifications */}
+                <div className="border rounded-md border-[#217989] bg-white sm:hidden md:hidden">
+                  <div className="flex justify-between p-3 items-center">
+                    <p className="font-bold text-lg">Notifications</p>
+                    <div className="cursor-pointer text-2xl flex items-center gap-2">
+                      <p style={{ fontSize: "1.2rem" }} onClick={handleFilterNotificationClick}><LuFilter /></p>
+                      <p onClick={handleMoreNotificationClick}><FiMoreHorizontal /></p>
+                    </div>
+                    {isPopupNotificationOpen && (
+                      <div className="absolute right-80 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={handleViewNotificationClick}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    )}
+                    {openPopup === 'notification' && (
+                      <div className="absolute right-80 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisWeek')}>This Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('nextWeek')}>Next Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisMonth')}>This Month</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('all')}>All</button>
+                      </div>
+                    )}
+                  </div>
+                  {filteredNotifications.length === 0 ? (
+                    <p className="text-center p-3">No data found.</p>
+                  ) : (
+                    filteredNotifications.slice(0, 3).map((notification, i) => (
+                      <div
+                        key={i}
+                        className="flex text-sm border-b w-full justify-between"
+                      >
+                        <div className="flex item-center mt-2">
+                          <div className="w-10 ml-3 mt-1">
+                            <img className="w-5 h-5" src="https://cdn-icons-png.flaticon.com/256/6577/6577277.png" alt="" />
+                          </div>
+                          <div>
+                            <p className="font-bold">
+                              {notification.Status === "Scheduled"
+                                ? "Interview Scheduled"
+                                : "New Interview Requests"}
+                            </p>
+                            <p>{notification.Body}</p>
+                            <p className="mb-2">{notification.CreatedDate}</p>
+                          </div>
+                        </div>
+                        <div className="text-xl mt-12 mr-2">
+                          <FaArrowRight />
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
-              {/* notifications only in mobile view */}
-              <div className="border rounded-md border-[#217989] bg-white sm:mx-[1px] md:mx-[1px] lg:hidden xl:hidden 2xl:hidden">
-                <div className="flex justify-between p-3 items-center">
-                  <p className="font-bold text-lg">Notifications</p>
-                  <div className="cursor-pointer text-2xl flex items-center gap-2">
-                    <p style={{ fontSize: "1.2rem" }} onClick={handleFilterNotificationClick}><LuFilter /></p>
-                    <p onClick={handleMoreNotificationClick}><FiMoreHorizontal /></p>
+              {/* Right column */}
+              <div className="col-span-2 sm:col-span-9 sm:-mt-[80rem] sm:mx-2 md:-mt-[92rem] md:mx-2 md:col-span-9 p-2 rounded-md">
+                {/* upcoming interviews */}
+                <div className="space-y-5 mb-10">
+                  <div className="flex justify-between p-1 items-center">
+                    <p className="font-bold text-md">Upcoming Interviews</p>
+                    <div className="cursor-pointer text-2xl flex items-center gap-1">
+                      <p style={{ fontSize: "1.2rem" }} onClick={handleFilterUpcomingInterviewsClick}><LuFilter /></p>
+                      <p onClick={handleMoreUpcomingInterviewsClick}><FiMoreHorizontal /></p>
+                    </div>
+                    {isPopupUpcomingInterviewsOpen && (
+                      <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={handleViewUpcomingInterviewsButtonClick}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    )}
+                    {openPopup === 'upcomingInterviews' && (
+                      <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('thisWeek')}>This Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('nextWeek')}>Next Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('thisMonth')}>This Month</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleFilterChange('all')}>All</button>
+                      </div>
+                    )}
                   </div>
-                  {isPopupNotificationOpen && (
-                    <div className="absolute right-80 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button
-                        onClick={handleViewNotificationClick}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
-                      >
-                        View All
-                      </button>
-                    </div>
+
+                  {filteredInterviews.length === 0 ? (
+                    <p className="text-center p-3">No data found.</p>
+                  ) : (
+                    filteredInterviews.slice(0, 3).map((interview, index) => {
+                      const round = roundsData[interview.rounds[0]];
+                      if (round) {
+                        let statusTextColor;
+                        switch (interview.Status) {
+                          case 'Reschedule':
+                            statusTextColor = 'text-violet-500';
+                            break;
+                          case 'Scheduled':
+                            statusTextColor = 'text-yellow-300';
+                            break;
+                          case 'ScheduleCancel':
+                            statusTextColor = 'text-red-500';
+                            break;
+                          default:
+                            statusTextColor = 'text-black';
+                        }
+
+                        return (
+                          <div key={index} className="border border-[#217989] bg-[#217989] shadow rounded-md bg-opacity-5 mb-2">
+                            <div className="border-b border-gray-400 px-2 flex justify-between items-center">
+                              <p className="text-sm">{displayDateTime(round.dateTime)}</p>
+                              <p className={statusTextColor}>{interview.Status}</p>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm p-2">
+                              <div>
+                                {interview.candidate?.imageUrl ? (
+                                  <img
+                                    src={interview.candidate.imageUrl}
+                                    alt="Candidate"
+                                    className="w-12 h-12 rounded-full"
+                                  />
+                                ) : (
+                                  interview.candidate?.Gender === "Male" ? (
+                                    <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
+                                  ) : interview.candidate?.Gender === "Female" ? (
+                                    <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
+                                  ) : (
+                                    <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
+                                  )
+                                )}
+                                <img className="w-5 h-5 rounded-full ml-9 -mt-5" src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_hybrid" alt="" />
+                              </div>
+                              <div>
+                                <p>{interview.Position}</p>
+                                <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interview)}>{interview.Candidate}</p>
+                                <p>Interviewers: Arjun</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })
                   )}
-                  {openPopup === 'notification' && (
-                    <div className="absolute right-80 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisWeek')}>This Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('nextWeek')}>Next Week</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisMonth')}>This Month</button>
-                      <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('all')}>All</button>
+
+                </div>
+                {/* tasks */}
+                <div className="border rounded-md border-[#217989] bg-[#217989] bg-opacity-5 mb-8">
+                  <div className="border-b border-gray-400">
+                    <div className="flex p-2 justify-between items-center">
+                      <p className="font-bold text-md">Tasks</p>
+                      <div className="cursor-pointer text-2xl flex items-center gap-1">
+                        <p style={{ fontSize: "1.2rem" }} onClick={handleFilterTasksClick}><LuFilter /></p>
+                        <p onClick={handleMoreTasksClick}><FiMoreHorizontal /></p>
+                      </div>
+                      {isPopupTasksOpen && (
+                        <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                          <button
+                            onClick={handleViewTasksButtonClick}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                          >
+                            View All
+                          </button>
+                        </div>
+                      )}
+                      {openPopup === 'tasks' && (
+                        <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                          <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('thisWeek')}>This Week</button>
+                          <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('nextWeek')}>Next Week</button>
+                          <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('thisMonth')}>This Month</button>
+                          <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleTaskFilterChange('all')}>All</button>
+                        </div>
+                      )}
                     </div>
+                    {loading ? (
+                      <p className="text-center p-3">Loading tasks...</p>
+                    ) : filteredTasks.length === 0 ? (
+                      <p className="text-center p-3">No tasks available.</p>
+                    ) : (
+                      filteredTasks.slice(0, 2).map((task, index) => (
+                        <div key={index}>
+                          <p className="text-center p-3 text-custom-blue font-bold">{task.title}</p>
+                          <div className="flex justify-between p-2">
+                            <p className="text-custom-blue">{task.assignedTo}</p>
+                            <p>{new Date(task.dueDate).toLocaleDateString()}</p>
+                          </div>
+                          <div className="flex justify-between p-2">
+                            <p>{task.priority}</p>
+                            <p>{task.status}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+                {/* interviewers */}
+                <div className="space-y-5">
+                  <div className="flex justify-between p-1 -mb-2 items-center">
+                    <p className="font-bold text-md">Interviewers</p>
+                    <div className="cursor-pointer text-2xl flex items-center gap-1">
+                      <p style={{ fontSize: "1.2rem" }} onClick={handleFilterOutsourceInterviewsClick}><LuFilter /></p>
+                      <p onClick={handleMoreOutsourceInterviewsClick}><FiMoreHorizontal /></p>
+                    </div>
+                    {isPopupOutsourceInterviewsOpen && (
+                      <div className="absolute right-4 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={handleViewOutsourceInterviewsButtonClick}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    )}
+                    {openPopup === 'outsourceInterviews' && (
+                      <div className="absolute right-4 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('thisWeek')}>This Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('nextWeek')}>Next Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('thisMonth')}>This Month</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleOutsourceFilterChange('all')}>All</button>
+                      </div>
+                    )}
+                  </div>
+                  {loading ? (
+                    <p>Loading...</p>
+                  ) : filteredOutsourceInterviews.length === 0 ? (
+                    <p className="text-center p-3">No data found.</p>
+                  ) : (
+                    filteredOutsourceInterviews.slice(0, 3).map((interview, index) => (
+                      <div key={index} className="border border-[#217989] bg-[#217989] shadow rounded-md p-2 bg-opacity-5 mb-2">
+                        <div className="flex items-center gap-3 text-sm">
+                          <div>
+                            {interview.candidate?.imageUrl ? (
+                              <img
+                                src={interview.candidate.imageUrl}
+                                alt="Candidate"
+                                className="w-12 h-12 rounded-full"
+                              />
+                            ) : (
+                              interview.candidate?.Gender === "Male" ? (
+                                <img src={maleImage} alt="Male Avatar" className="w-12 h-12 rounded-full" />
+                              ) : interview.candidate?.Gender === "Female" ? (
+                                <img src={femaleImage} alt="Female Avatar" className="w-12 h-12 rounded-full" />
+                              ) : (
+                                <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12 rounded-full" />
+                              )
+                            )}
+                          </div>
+                          <div>
+                            <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interview)}>
+                              {interview.Candidate}
+                            </p>
+                            <p>{interview.Position}</p>
+                            <p>{new Date(interview.createdAt).toLocaleString()}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
-                {filteredNotifications.length === 0 ? (
-                  <p className="text-center p-3">No data found.</p>
-                ) : (
-                  filteredNotifications.slice(0, 3).map((notification, i) => (
-                    <div
-                      key={i}
-                      className="flex text-sm border-b w-full justify-between"
-                    >
-                      <div className="flex item-center mt-2">
-                        <div className="w-14 ml-3 mt-1">
-                          {/* {notification.Status === "Scheduled" ? (
+
+                {/* Interview Feedback only in mobile view */}
+                <div className="lg:hidden xl:hidden 2xl:hidden sm:mx-[1px] sm:mt-8 sm:mb-12 md:mx-[1px] md:mt-8 md:mb-12">
+                  <p className="font-bold text-lg mb-5">Interview Feedback</p>
+                  <div className="sm:flex sm:justify-center md:flex md:justify-center">
+                    <div className="sm:space-y-5 md:grid md:grid-cols-2 md:gap-6">
+                      {sortedInterviews.slice(0, 2).map((interview, index) => {
+                        const round = roundsData[interview.rounds[0]];
+                        if (round) {
+                          const dateOnly = round.dateTime.split(' ')[0];
+                          let statusTextColor;
+                          switch (interview.Status) {
+                            case 'Reschedule':
+                              statusTextColor = 'text-violet-500';
+                              break;
+                            case 'Scheduled':
+                              statusTextColor = 'text-yellow-300';
+                              break;
+                            case 'ScheduleCancel':
+                              statusTextColor = 'text-red-500';
+                              break;
+                            default:
+                              statusTextColor = 'text-black';
+                          }
+
+                          return (
+                            <div key={index} className="border rounded-md border-[#217989] w-56 bg-white">
+                              <div className="flex justify-between border-b text-sm p-2">
+                                <p>{dateOnly}</p>
+                                <p className={`font-semibold ${statusTextColor}`}>{interview.Status}</p>
+                              </div>
+                              <div className="flex flex-col items-center py-3">
+                                {interview.candidate?.imageUrl ? (
+                                  <img
+                                    src={interview.candidate.imageUrl}
+                                    alt="Candidate"
+                                    className="w-12 h-12"
+                                  />
+                                ) : (
+                                  interview.candidate?.Gender === "Male" ? (
+                                    <img src={maleImage} alt="Male Avatar" className="w-12 h-12" />
+                                  ) : interview.candidate?.Gender === "Female" ? (
+                                    <img src={femaleImage} alt="Female Avatar" className="w-12 h-12" />
+                                  ) : (
+                                    <img src={genderlessImage} alt="Other Avatar" className="w-12 h-12" />
+                                  )
+                                )}
+                                <p className="text-center">{interview.Candidate}</p>
+                                <p className="text-center">{interview.Position}</p>
+                              </div>
+                              <div className="flex justify-between p-2">
+                                <button className="border rounded-md border-[#217989] px-2">MSG</button>
+                                <button className="border rounded-md border-[#217989] px-2">Email</button>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* notifications only in mobile view */}
+                <div className="border rounded-md border-[#217989] bg-white sm:mx-[1px] md:mx-[1px] lg:hidden xl:hidden 2xl:hidden">
+                  <div className="flex justify-between p-3 items-center">
+                    <p className="font-bold text-lg">Notifications</p>
+                    <div className="cursor-pointer text-2xl flex items-center gap-2">
+                      <p style={{ fontSize: "1.2rem" }} onClick={handleFilterNotificationClick}><LuFilter /></p>
+                      <p onClick={handleMoreNotificationClick}><FiMoreHorizontal /></p>
+                    </div>
+                    {isPopupNotificationOpen && (
+                      <div className="absolute right-80 mt-20 w-20 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={handleViewNotificationClick}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 text-xs"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    )}
+                    {openPopup === 'notification' && (
+                      <div className="absolute right-80 mt-48 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisWeek')}>This Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('nextWeek')}>Next Week</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('thisMonth')}>This Month</button>
+                        <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleNotificationFilterChange('all')}>All</button>
+                      </div>
+                    )}
+                  </div>
+                  {filteredNotifications.length === 0 ? (
+                    <p className="text-center p-3">No data found.</p>
+                  ) : (
+                    filteredNotifications.slice(0, 3).map((notification, i) => (
+                      <div
+                        key={i}
+                        className="flex text-sm border-b w-full justify-between"
+                      >
+                        <div className="flex item-center mt-2">
+                          <div className="w-14 ml-3 mt-1">
+                            {/* {notification.Status === "Scheduled" ? (
                             <AiTwotoneSchedule className="text-xl" />
                           ) : (
                             <PiNotificationBold className="text-xl" />
                           )} */}
+                          </div>
+                          <div>
+                            <p className="font-bold">
+                              {notification.Status === "Scheduled"
+                                ? "Interview Scheduled"
+                                : "New Interview Requests"}
+                            </p>
+                            <p>{notification.Body}</p>
+                            <p className="mb-2">{notification.CreatedDate}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold">
-                            {notification.Status === "Scheduled"
-                              ? "Interview Scheduled"
-                              : "New Interview Requests"}
-                          </p>
-                          <p>{notification.Body}</p>
-                          <p className="mb-2">{notification.CreatedDate}</p>
+                        <div className="text-xl mt-12 mr-2">
+                          <FaArrowRight />
                         </div>
                       </div>
-                      <div className="text-xl mt-12 mr-2">
-                        <FaArrowRight />
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+                    ))
+                  )}
+                </div>
 
-              {/* newly added only in mobile view */}
-              <div className="border mt-6 rounded-md border-[#217989] sm:mx-[1px] md:mx-[1px] md:mt-8 lg:hidden xl:hidden 2xl:hidden">
-                <div className="bg-[#217989] bg-opacity-5 p-2 rounded-md">
-                  <p className="mb-2 font-bold">Newly added</p>
-                  <div className="flex gap-5 mb-2 text-2xl">
-                    <div className="font-bold w-9"><MdOutlineContactPage /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {candidateData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleCandidateClick(candidateData[0])}>
-                              {candidateData[0].LastName}
-                            </p>
-                          )}
-                        </>
-                      )}
+                {/* newly added only in mobile view */}
+                <div className="border mt-6 rounded-md border-[#217989] sm:mx-[1px] md:mx-[1px] md:mt-8 lg:hidden xl:hidden 2xl:hidden">
+                  <div className="bg-[#217989] bg-opacity-5 p-2 rounded-md">
+                    <p className="mb-2 font-bold">Newly added</p>
+                    <div className="flex gap-5 mb-2 text-2xl">
+                      <div className="font-bold w-9"><MdOutlineContactPage /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {candidateData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleCandidateClick(candidateData[0])}>
+                                {candidateData[0].LastName}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-5 mb-2 ml-1 text-2xl">
-                    <div className="font-bold w-9"><FaBuildingUser /></div>
-                    <div className="text-sm -ml-1">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {lastFetchedPositions.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handlePositionClick(lastFetchedPositions[0])}>
-                              {lastFetchedPositions[0].title}
-                            </p>
-                          )}
-                        </>
-                      )}
+                    <div className="flex gap-5 mb-2 ml-1 text-2xl">
+                      <div className="font-bold w-9"><FaBuildingUser /></div>
+                      <div className="text-sm -ml-1">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {lastFetchedPositions.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handlePositionClick(lastFetchedPositions[0])}>
+                                {lastFetchedPositions[0].title}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-5 mb-2 text-2xl">
-                    <div className="font-bold w-9"><BsBuildingCheck /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {teamsData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleTeamClick(teamsData[0])}>
-                              {teamsData[0].LastName}
-                            </p>
-                          )}
-                        </>
-                      )}
+                    <div className="flex gap-5 mb-2 text-2xl">
+                      <div className="font-bold w-9"><BsBuildingCheck /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {teamsData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleTeamClick(teamsData[0])}>
+                                {teamsData[0].LastName}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-5 text-2xl">
-                    <div className="font-bold w-9"><MdOutlineSchedule /></div>
-                    <div className="text-sm">
-                      {loading ? (
-                        <p>Loading...</p>
-                      ) : (
-                        <>
-                          {interviewData.length > 0 && (
-                            <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interviewData[0])}>
-                              {interviewData[0].Candidate}
-                            </p>
-                          )}
-                        </>
-                      )}
+                    <div className="flex gap-5 text-2xl">
+                      <div className="font-bold w-9"><MdOutlineSchedule /></div>
+                      <div className="text-sm">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : (
+                          <>
+                            {interviewData.length > 0 && (
+                              <p className="cursor-pointer text-custom-blue" onClick={() => handleInterviewClick(interviewData[0])}>
+                                {interviewData[0].Candidate}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
               </div>
 
             </div>
-
           </div>
         </div>
+        {selectedCandidate && (
+          <Suspense fallback={<div>Loading CandidateProfileDetails...</div>}>
+            <CandidateProfileDetails candidate={selectedCandidate} onCloseprofile={handleCloseProfile} />
+          </Suspense>
+        )}
+        {/* {selectedPosition && (
+          <Suspense fallback={<div>Loading PositionProfileDetails...</div>}>
+            <PositionProfileDetails position={selectedPosition} onCloseprofile={handleClosePositionProfile} />
+          </Suspense>
+        )} */}
+        {/* {selectedTeam && (
+          <Suspense fallback={<div>Loading TeamProfileDetails...</div>}>
+            <TeamProfileDetails candidate={selectedTeam} onCloseprofile={handleCloseTeamProfile} />
+          </Suspense>
+        )} */}
+        {/* {selectedInterview && (
+          <Suspense fallback={<div>Loading Internalprofiledetails...</div>}>
+            <Internalprofiledetails candidate={selectedInterview} roundsData={roundsData} onCloseprofile={handleCloseInterviewProfile} />
+          </Suspense>
+        )} */}
+        <Suspense fallback={<div>Loading AppViewMore...</div>}>
+          <AppViewMore isModalOpen={isModalOpen} closeModal={closeModal} />
+        </Suspense>
       </div>
-
-      {selectedCandidate && (
-        <CandidateProfileDetails candidate={selectedCandidate} onCloseprofile={handleCloseProfile} />
-      )}
-      {/* {selectedPosition && (
-        <PositionProfileDetails position={selectedPosition} onCloseprofile={handleClosePositionProfile} />
-      )} */}
-      {/* {selectedTeam && (
-        <TeamProfileDetails candidate={selectedTeam} onCloseprofile={handleCloseTeamProfile} />
-      )} */}
-      {/* {selectedInterview && (
-        <Internalprofiledetails candidate={selectedInterview} roundsData={roundsData} onCloseprofile={handleCloseInterviewProfile} />
-      )} */}
-
-      <AppViewMore isModalOpen={isModalOpen} closeModal={closeModal} />
-
-    </>
+    </ErrorBoundary>
   );
 };
 
