@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import image1 from "../Dashboard-Part/Images/image1.png";
@@ -8,7 +8,31 @@ import logo from "../../Pages/Dashboard-Part/Images/upinterviewLogo.png";
 
 import { ReactComponent as MdArrowDropDown } from '../../../src/icons/MdArrowDropDown.svg';
 
-export const Organization = () => {
+const countryOptions = ["India", "UK"];
+const employeesOptions = ["1-10", "11-20", "21-50", "51-100", "100+"];
+
+const FloatingLabelInput = memo(({ id, label, value, onChange, type = "text", readOnly, onClick }) => (
+  <div className="relative">
+    <input
+      type={type}
+      id={id}
+      className="block rounded px-2.5 pb-1.5 pt-4 w-full text-sm text-gray-900 bg-white border-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-gray-300 peer"
+      placeholder=" "
+      value={value}
+      onChange={onChange}
+      readOnly={readOnly}
+      onClick={onClick}
+    />
+    <label
+      htmlFor={id}
+      className="absolute text-sm text-gray-500 duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3"
+    >
+      {label}
+    </label>
+  </div>
+));
+
+export const Organization = memo(() => {
   const [selectedFirstName, setSelectedFirstName] = useState("");
   const [selectedLastName, setSelectedLastName] = useState("");
   const [selectedEmail, setSelectedEmail] = useState("");
@@ -23,8 +47,6 @@ export const Organization = () => {
   const [showDropdownEmployees, setShowDropdownEmployees] = useState(false);
   const [showDropdownCountry, setShowDropdownCountry] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const countryOptions = ["India", "UK"];
-  const employeesOptions = ["Employees", "11-20"];
   const [objectsData, setObjectsData] = useState([]);
   const [tabsData, setTabsData] = useState([]);
   const navigate = useNavigate();
@@ -33,18 +55,22 @@ export const Organization = () => {
     const fetchObjectsData = async () => {
       try {
         const data = await fetchMasterData('api/objects');
-        setObjectsData(data.objects || []);
+        const objects = data?.objects;
+        setObjectsData(Array.isArray(objects) ? objects : []);
       } catch (error) {
         console.error('Error fetching objects data:', error);
+        setObjectsData([]);
       }
     };
 
     const fetchTabsData = async () => {
       try {
         const data = await fetchMasterData('api/tabs');
-        setTabsData(data.tabs || []);
+        const tabs = data?.tabs;
+        setTabsData(Array.isArray(tabs) ? tabs : []);
       } catch (error) {
         console.error('Error fetching tabs data:', error);
+        setTabsData([]);
       }
     };
 
@@ -70,29 +96,59 @@ export const Organization = () => {
     setShowDropdownCountry(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validateForm = () => {
     if (selectedPassword !== selectedConfirmPassword) {
       setErrorMessage("Passwords do not match!");
+      return false;
+    }
+
+    const requiredFields = {
+      'First Name': selectedFirstName,
+      'Last Name': selectedLastName,
+      'Email': selectedEmail,
+      'Phone': selectedPhone,
+      'Username': selectedUsername,
+      'Job Title': selectedJobTitle,
+      'Company': selectedCompany,
+      'Employees': selectedEmployees,
+      'Country': selectedCountry,
+      'Password': selectedPassword
+    };
+
+    const emptyFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value)
+      .map(([field]) => field);
+
+    if (emptyFields.length > 0) {
+      setErrorMessage(`Please fill in the following required fields: ${emptyFields.join(', ')}`);
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(selectedEmail)) {
+      setErrorMessage("Please enter a valid email address");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       return;
     }
 
     try {
-
-      // Ensure objectsData and tabsData are arrays
-      if (!Array.isArray(objectsData) || !Array.isArray(tabsData)) {
-        throw new Error("Objects data or tabs data is not available");
-      }
-
-      // Create organization
       const formData = {
-        firstName: selectedFirstName,
-        lastName: selectedLastName,
-        Email: selectedEmail,
-        Phone: selectedPhone,
-        username: selectedUsername,
-        jobTitle: selectedJobTitle,
-        company: selectedCompany,
+        firstName: selectedFirstName.trim(),
+        lastName: selectedLastName.trim(),
+        Email: selectedEmail.trim(),
+        Phone: selectedPhone.trim(),
+        username: selectedUsername.trim(),
+        jobTitle: selectedJobTitle.trim(),
+        company: selectedCompany.trim(),
         employees: selectedEmployees,
         country: selectedCountry,
         password: selectedPassword
@@ -100,59 +156,67 @@ export const Organization = () => {
 
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/organization`, formData);
 
-      Cookies.set('userId', response.data.user._id, { expires: 7 });
-      Cookies.set('organizationId', response.data.organization._id, { expires: 7 });
+      if (!response?.data?.user?._id || !response?.data?.organization?._id) {
+        throw new Error("Invalid response from server");
+      }
 
-      const organizationId = response.data.organization._id;
-      const userId = response.data.user._id; // Ensure user ID is correctly retrieved
+      const { user, organization } = response.data;
 
-      // Construct accessBody from objectsData and tabsData
-      const accessBody = objectsData.map(tab => ({
+      Cookies.set('userId', user._id, { expires: 7 });
+      Cookies.set('organizationId', organization._id, { expires: 7 });
+
+      const safeObjectsData = Array.isArray(objectsData) ? objectsData : [];
+      const safeTabsData = Array.isArray(tabsData) ? tabsData : [];
+
+      const accessBody = safeObjectsData.map(tab => ({
         ObjName: tab,
         Access: 'Public',
         GrantAccess: false
       }));
 
-      // Save default sharing settings
       await axios.post(`${process.env.REACT_APP_API_URL}/api/sharing-settings`, {
         Name: 'sharingSettingDefaultName',
-        organizationId: organizationId,
-        accessBody: accessBody
+        organizationId: organization._id,
+        accessBody
       });
 
-      // Create default profiles
       const profileNames = ["Admin", "CEO", "HR Manager", "HR Lead", "HR Recruiter"];
-      let adminProfileId = "";
-      for (let i = 0; i < profileNames.length; i++) {
-        const profileTabs = tabsData.map(tab => ({
+      let adminProfileId = null;
+
+      for (const profileName of profileNames) {
+        const profileTabs = safeTabsData.map(tab => ({
           name: tab,
-          status: profileNames[i] === "Admin" ? 'Visible' : 'Hidden'
+          status: profileName === "Admin" ? 'Visible' : 'Hidden'
         }));
-        const profileObjects = objectsData.map(object => ({
+
+        const profileObjects = safeObjectsData.map(object => ({
           name: object,
           permissions: {
             View: true,
             Create: true,
             Edit: true,
-            Delete: profileNames[i] === "Admin"
+            Delete: profileName === "Admin"
           }
         }));
 
         const profileResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/profiles`, {
-          label: profileNames[i],
-          Name: profileNames[i],
-          Description: `Default profile description for ${profileNames[i]}`,
+          label: profileName,
+          Name: profileName,
+          Description: `Default profile description for ${profileName}`,
           Tabs: profileTabs,
           Objects: profileObjects,
-          organizationId: organizationId
+          organizationId: organization._id
         });
 
-        if (profileNames[i] === "Admin") {
+        if (profileName === "Admin" && profileResponse?.data?._id) {
           adminProfileId = profileResponse.data._id;
         }
       }
 
-      // Create default roles
+      if (!adminProfileId) {
+        throw new Error("Failed to create admin profile");
+      }
+
       const roles = [
         { label: "Admin", name: "Admin" },
         { label: "CEO", name: "CEO" },
@@ -183,7 +247,7 @@ export const Organization = () => {
           label: roles[i].label,
           roleName: roles[i].name,
           description: `Default role description for ${roles[i].name}`,
-          organizationId: organizationId,
+          organizationId: organization._id,
         };
 
         if (reportsToRoleId) {
@@ -203,15 +267,16 @@ export const Organization = () => {
         }
       }
 
-      await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/users/${user._id}`, {
         RoleId: adminRoleId,
         ProfileId: adminProfileId
       });
 
       navigate('/price');
     } catch (error) {
-      console.error('Error saving organization:', error.response?.data || error.message);
-      setErrorMessage(`An error occurred while saving the organization: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+      console.error('Error saving organization:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'An error occurred while saving the organization';
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -466,4 +531,4 @@ export const Organization = () => {
       </div>
     </>
   );
-};
+});

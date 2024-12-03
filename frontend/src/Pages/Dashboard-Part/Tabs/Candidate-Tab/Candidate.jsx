@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "../../../../index.css";
+import React, { Suspense } from 'react';
 import "../styles/tabs.scss";
+import ErrorBoundary from '../../../../ErrorBoundary.jsx';
 import Tooltip from "@mui/material/Tooltip";
-import CandidateProfileDetails from "./CandidateProfileDetails";
-import Sidebar from "../Candidate-Tab/CreateCandidate";
-import Editcandidate from "./EditCandidate";
-// import Savenextpopup from "./Save_&_next_popup";
 import maleImage from '../../../Dashboard-Part/Images/man.png';
 import femaleImage from '../../../Dashboard-Part/Images/woman.png';
 import genderlessImage from '../../../Dashboard-Part/Images/transgender.png';
@@ -26,7 +24,12 @@ import { ReactComponent as CgInfo } from '../../../../icons/CgInfo.svg';
 import { ReactComponent as LuFilterX } from '../../../../icons/LuFilterX.svg';
 import { usePermissions } from '../../../../PermissionsContext';
 import { useMemo } from 'react';
+import config from '../../../../config';
 
+const CandidateProfileDetails = React.lazy(() => import('./CandidateProfileDetails'));
+const Sidebar = React.lazy(() => import('../Candidate-Tab/CreateCandidate'));
+const Editcandidate = React.lazy(() => import('./EditCandidate'));
+// const Savenextpopup = React.lazy(() => import('./Save_&_next_popup'));
 
 const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
   const [isStatusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -332,7 +335,7 @@ const Candidate = ({ isAssessmentContext = false, onSelectCandidates }) => {
       const filteredCandidates = await fetchFilterData('candidate', sharingPermissions);
       const candidatesWithImages = filteredCandidates.map((candidate) => {
         if (candidate.ImageData && candidate.ImageData.filename) {
-          const imageUrl = `${process.env.REACT_APP_API_URL}/${candidate.ImageData.path.replace(/\\/g, '/')}`;
+          const imageUrl = `${config.apiUrl}/${candidate.ImageData.path.replace(/\\/g, '/')}`;
           return { ...candidate, imageUrl };
         }
         return candidate;
@@ -352,7 +355,6 @@ const Candidate = ({ isAssessmentContext = false, onSelectCandidates }) => {
   };
   const [candidateData, setCandidateData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
 
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
@@ -524,17 +526,17 @@ const Candidate = ({ isAssessmentContext = false, onSelectCandidates }) => {
       const updatedSelection = isSelected
         ? prevSelected.filter((id) => id !== candidateId)
         : [...prevSelected, candidateId];
-  
+
       return updatedSelection;
     });
   };
-  
+
   useEffect(() => {
     if (onSelectCandidates) {
       onSelectCandidates(selectedCandidates);
     }
   }, [selectedCandidates, onSelectCandidates]);
-  
+
   const handleSelectAll = () => {
     if (selectedCandidates.length === candidateData.length) {
       setSelectedCandidates([]);
@@ -545,372 +547,390 @@ const Candidate = ({ isAssessmentContext = false, onSelectCandidates }) => {
   };
 
   return (
-    <>
-      {showMainContent && !selectedCandidate && (
-        <section>
-          <div className="fixed left-0 right-0 top-16 sm:top-20 md:top-24">
-            <div className="flex justify-between p-4">
-              {!isAssessmentContext && (
+    <ErrorBoundary>
+      <div>
+        {showMainContent && !selectedCandidate && (
+          <section>
+            <div className="fixed left-0 right-0 top-16 sm:top-20 md:top-24">
+              <div className="flex justify-between p-4">
+                {!isAssessmentContext && (
+                  <div>
+                    <span className="text-lg font-semibold">Candidates</span>
+                  </div>
+                )}
                 <div>
-                  <span className="text-lg font-semibold">Candidates</span>
+                  {notification && (
+                    <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300">
+                      {notification}
+                    </div>
+                  )}
                 </div>
-              )}
-              <div>
-                {notification && (
-                  <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300">
-                    {notification}
+
+                {objectPermissions.Create && !isAssessmentContext && (
+                  <div onClick={toggleSidebar} className="">
+                    <span className="p-2 bg-custom-blue text-md sm:text-sm md:text-sm text-white font-semibold border shadow rounded">
+                      Add
+                    </span>
                   </div>
                 )}
               </div>
-
-              {objectPermissions.Create && !isAssessmentContext && (
-                <div onClick={toggleSidebar} className="">
-                  <span className="p-2 bg-custom-blue text-md sm:text-sm md:text-sm text-white font-semibold border shadow rounded">
-                    Add
-                  </span>
+            </div>
+            <div className={`fixed top-28 sm:top-32 md:top-36 left-0 right-0 ${isAssessmentContext ? 'justify-end top-[150px]' : 'lg:flex xl:flex 2xl:flex items-center lg:justify-between xl:justify-between 2xl:justify-between'} p-4`}>
+              {isAssessmentContext ? (
+                <p className='font-semibold text-lg float-start'>Candidates</p>
+              ) : (
+                <div className="flex items-center sm:hidden md:hidden">
+                  <Tooltip title="List" enterDelay={300} leaveDelay={100} arrow>
+                    <span onClick={handleListViewClick}>
+                      <FaList
+                        className={`text-xl mr-4 ${viewMode === "list" ? "text-custom-blue" : ""}`}
+                      />
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="Kanban" enterDelay={300} leaveDelay={100} arrow>
+                    <span onClick={handleKanbanViewClick}>
+                      <TbLayoutGridRemove
+                        className={`text-xl ${viewMode === "kanban" ? "text-custom-blue" : ""}`}
+                      />
+                    </span>
+                  </Tooltip>
                 </div>
               )}
-            </div>
-          </div>
-          <div className={`fixed top-28 sm:top-32 md:top-36 left-0 right-0 ${isAssessmentContext ? 'justify-end top-[150px]' : 'lg:flex xl:flex 2xl:flex items-center lg:justify-between xl:justify-between 2xl:justify-between'} p-4`}>
-            {isAssessmentContext ? (
-              <p className='font-semibold text-lg float-start'>Candidates</p>
-            ) : (
-              <div className="flex items-center sm:hidden md:hidden">
-                <Tooltip title="List" enterDelay={300} leaveDelay={100} arrow>
-                  <span onClick={handleListViewClick}>
-                    <FaList
-                      className={`text-xl mr-4 ${viewMode === "list" ? "text-custom-blue" : ""}`}
+              <div className="flex items-center justify-end">
+                <div className="relative">
+                  <div className="searchintabs border rounded-md relative py-[2px]">
+                    <div className="absolute inset-y-0 left-0 flex items-center">
+                      <button type="submit" className="p-2">
+                        <IoMdSearch className="text-custom-blue" />
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search by Candidate, Email, Phone."
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                      className="rounded-full h-8"
                     />
-                  </span>
-                </Tooltip>
-                <Tooltip title="Kanban" enterDelay={300} leaveDelay={100} arrow>
-                  <span onClick={handleKanbanViewClick}>
-                    <TbLayoutGridRemove
-                      className={`text-xl ${viewMode === "kanban" ? "text-custom-blue" : ""}`}
-                    />
-                  </span>
-                </Tooltip>
-              </div>
-            )}
-            <div className="flex items-center justify-end">
-              <div className="relative">
-                <div className="searchintabs border rounded-md relative py-[2px]">
-                  <div className="absolute inset-y-0 left-0 flex items-center">
-                    <button type="submit" className="p-2">
-                      <IoMdSearch className="text-custom-blue" />
-                    </button>
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Search by Candidate, Email, Phone."
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
-                    className="rounded-full h-8"
-                  />
+                </div>
+                <div>
+                  <span className="p-2 text-xl sm:text-sm md:text-sm">
+                    {currentPage + 1}/{totalPages}
+                  </span>
+                </div>
+                <div className="flex">
+                  <Tooltip title="Previous" enterDelay={300} leaveDelay={100} arrow>
+                    <span
+                      className={`border p-2 mr-2 text-xl sm:text-md md:text-md rounded-md ${currentPage === 0 ? " cursor-not-allowed" : ""}`}
+                      onClick={prevPage}
+                    >
+                      <IoIosArrowBack className="text-custom-blue" />
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="Next" enterDelay={300} leaveDelay={100} arrow>
+                    <span
+                      className={`border p-2 text-xl sm:text-md md:text-md rounded-md ${currentPage === totalPages - 1 ? " cursor-not-allowed" : ""}`}
+                      onClick={nextPage}
+                    >
+                      <IoIosArrowForward className="text-custom-blue" />
+                    </span>
+                  </Tooltip>
+                </div>
+                <div className="ml-2 text-xl sm:text-md md:text-md border rounded-md p-2">
+                  <Tooltip title="Filter" enterDelay={300} leaveDelay={100} arrow>
+                    <span
+                      onClick={handleFilterIconClick}
+                      style={{
+                        opacity: candidateData.length === 0 ? 0.2 : 1,
+                        pointerEvents: candidateData.length === 0 ? "none" : "auto",
+                      }}
+                    >
+                      {isFilterActive ? (
+                        <LuFilterX className="text-custom-blue" />
+                      ) : (
+                        <FiFilter className="text-custom-blue" />
+                      )}
+                    </span>
+                  </Tooltip>
                 </div>
               </div>
-              <div>
-                <span className="p-2 text-xl sm:text-sm md:text-sm">
-                  {currentPage + 1}/{totalPages}
-                </span>
-              </div>
-              <div className="flex">
-                <Tooltip title="Previous" enterDelay={300} leaveDelay={100} arrow>
-                  <span
-                    className={`border p-2 mr-2 text-xl sm:text-md md:text-md rounded-md ${currentPage === 0 ? " cursor-not-allowed" : ""}`}
-                    onClick={prevPage}
-                  >
-                    <IoIosArrowBack className="text-custom-blue" />
-                  </span>
-                </Tooltip>
-                <Tooltip title="Next" enterDelay={300} leaveDelay={100} arrow>
-                  <span
-                    className={`border p-2 text-xl sm:text-md md:text-md rounded-md ${currentPage === totalPages - 1 ? " cursor-not-allowed" : ""}`}
-                    onClick={nextPage}
-                  >
-                    <IoIosArrowForward className="text-custom-blue" />
-                  </span>
-                </Tooltip>
-              </div>
-              <div className="ml-2 text-xl sm:text-md md:text-md border rounded-md p-2">
-                <Tooltip title="Filter" enterDelay={300} leaveDelay={100} arrow>
-                  <span
-                    onClick={handleFilterIconClick}
-                    style={{
-                      opacity: candidateData.length === 0 ? 0.2 : 1,
-                      pointerEvents: candidateData.length === 0 ? "none" : "auto",
-                    }}
-                  >
-                    {isFilterActive ? (
-                      <LuFilterX className="text-custom-blue" />
-                    ) : (
-                      <FiFilter className="text-custom-blue" />
-                    )}
-                  </span>
-                </Tooltip>
-              </div>
             </div>
-          </div>
-          <div className={`fixed left-0 right-0 mx-auto z-10 sm:top-44 md:top-52 ${isAssessmentContext ? 'lg:top-[220px] xl:top-[220px] 2xl:top-[220px]' : 'lg:top-48 xl:top-48 2xl:top-48'}`}>
-            {tableVisible && (
-              <div>
-                {viewMode === "list" ? (
-                  <div className="sm:hidden md:hidden lg:flex xl:flex 2xl:flex">
-                    <div
-                      className="flex-grow"
-                      style={{ marginRight: isMenuOpen ? "290px" : "0" }}
-                    >
-                      <div className="relative h-[calc(100vh-200px)] flex flex-col">
-                        <div className="flex-grow overflow-y-auto pb-4">
-                          <table className="text-left w-full border-collapse border-gray-300 mb-14">
-                            <thead className="bg-custom-bg sticky top-0 z-10 text-xs">
-                              <tr>
-                                {isAssessmentContext && (
-                                  <th scope="col" className="py-3 px-3">
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedCandidates.length === candidateData.length}
-                                      onChange={handleSelectAll}
-                                    />
-                                  </th>
-                                )}
-                                <th scope="col" className={`${isAssessmentContext ? 'py-2' : 'py-3 px-6'}`}>Candidate Name</th>
-                                <th scope="col" className="py-3 px-6">Email</th>
-                                <th scope="col" className="py-3 px-6">Phone</th>
-                                <th scope="col" className="py-3 px-6">Higher Qualification</th>
-                                <th scope="col" className="py-3 px-6">Current Experience</th>
-                                <th scope="col" className="py-3 px-6">Skills/Technology</th>
-                                <th scope="col" className="py-3 px-6">Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {loading ? (
+            <div className={`fixed left-0 right-0 mx-auto z-10 sm:top-44 md:top-52 ${isAssessmentContext ? 'lg:top-[220px] xl:top-[220px] 2xl:top-[220px]' : 'lg:top-48 xl:top-48 2xl:top-48'}`}>
+              {tableVisible && (
+                <div>
+                  {viewMode === "list" ? (
+                    <div className="sm:hidden md:hidden lg:flex xl:flex 2xl:flex">
+                      <div
+                        className="flex-grow"
+                        style={{ marginRight: isMenuOpen ? "290px" : "0" }}
+                      >
+                        <div className="relative h-[calc(100vh-200px)] flex flex-col">
+                          <div className="flex-grow overflow-y-auto pb-4">
+                            <table className="text-left w-full border-collapse border-gray-300 mb-14">
+                              <thead className="bg-custom-bg sticky top-0 z-10 text-xs">
                                 <tr>
-                                  <td colSpan="7" className="py-28 text-center">
-                                    <div className="wrapper12">
-                                      <div className="circle12"></div>
-                                      <div className="circle12"></div>
-                                      <div className="circle12"></div>
-                                      <div className="shadow12"></div>
-                                      <div className="shadow12"></div>
-                                      <div className="shadow12"></div>
-                                    </div>
-                                  </td>
+                                  {isAssessmentContext && (
+                                    <th scope="col" className="py-3 px-3">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedCandidates.length === candidateData.length}
+                                        onChange={handleSelectAll}
+                                      />
+                                    </th>
+                                  )}
+                                  <th scope="col" className={`${isAssessmentContext ? 'py-2' : 'py-3 px-6'}`}>Candidate Name</th>
+                                  <th scope="col" className="py-3 px-6">Email</th>
+                                  <th scope="col" className="py-3 px-6">Phone</th>
+                                  <th scope="col" className="py-3 px-6">Higher Qualification</th>
+                                  <th scope="col" className="py-3 px-6">Current Experience</th>
+                                  <th scope="col" className="py-3 px-6">Skills/Technology</th>
+                                  <th scope="col" className="py-3 px-6">Action</th>
                                 </tr>
-                              ) : candidateData.length === 0 ? (
-                                <tr>
-                                  <td colSpan="7" className="py-10 text-center">
-                                    <div className="flex flex-col items-center justify-center p-5">
-                                      <p className="text-9xl rotate-180 text-blue-500"><CgInfo /></p>
-                                      <p className="text-center text-lg font-normal">You don't have candidates yet. Create new candidate.</p>
-                                      <p onClick={toggleSidebar} className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md">Add Candidate</p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ) : currentFilteredRows.length === 0 ? (
-                                <tr>
-                                  <td colSpan="7" className="py-10 text-center">
-                                    <p className="text-lg font-normal">No data found.</p>
-                                  </td>
-                                </tr>
-                              ) : (
-                                currentFilteredRows.map((candidate) => (
-                                  <tr key={candidate._id} className="bg-white border-b cursor-pointer text-xs">
-                                    {isAssessmentContext && (
-                                      <td className="py-2 px-3">
-                                        <input
-                                          type="checkbox"
-                                          checked={selectedCandidates.includes(candidate._id)}
-                                          onChange={() => handleSelectCandidate(candidate._id)}
-                                        />
-                                      </td>
-                                    )}
-                                    <td className={`${isAssessmentContext ? 'py-2' : 'py-2 px-6 text-custom-blue'}`}>
-                                      <div
-                                        className="flex items-center gap-3"
-                                        onClick={() => handleCandidateClick(candidate)}
-                                      >
-                                        <img
-                                          src={candidate.imageUrl || (candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage)}
-                                          alt="Candidate"
-                                          className="w-7 h-7 rounded-full object-cover"
-                                        />
-                                        {candidate.LastName}
+                              </thead>
+                              <tbody>
+                                {loading ? (
+                                  <tr>
+                                    <td colSpan="7" className="py-28 text-center">
+                                      <div className="wrapper12">
+                                        <div className="circle12"></div>
+                                        <div className="circle12"></div>
+                                        <div className="circle12"></div>
+                                        <div className="shadow12"></div>
+                                        <div className="shadow12"></div>
+                                        <div className="shadow12"></div>
                                       </div>
-                                    </td>
-                                    <td className="py-2 px-6">{candidate.Email}</td>
-                                    <td className="py-2 px-6">{candidate.Phone}</td>
-                                    <td className="py-2 px-6">{candidate.HigherQualification}</td>
-                                    <td className="py-2 px-6">{candidate.CurrentExperience}</td>
-                                    <td className="py-2 px-6">
-                                      {candidate.skills.map((skillEntry, index) => (
-                                        <div key={index}>
-                                          {skillEntry.skill}{index < candidate.skills.length - 1 && ', '}
-                                        </div>
-                                      ))}
-                                    </td>
-                                    <td className="py-2 px-6 relative">
-                                      <button onClick={() => toggleAction(candidate._id)}>
-                                        <FiMoreHorizontal className="text-3xl" />
-                                      </button>
-                                      {actionViewMore === candidate._id && (
-                                        <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
-                                          <div className="space-y-1">
-                                            {objectPermissions.View && (
-                                              <p
-                                                className="hover:bg-gray-200 p-1 rounded pl-3"
-                                                onClick={() => handleCandidateClick(candidate)}
-                                              >
-                                                View
-                                              </p>
-                                            )}
-                                            {objectPermissions.Edit && (
-                                              <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleEditClick(candidate)}>Edit</p>
-                                            )}
-                                            <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handlePopupClick(candidate.LastName)}>
-                                              Schedule
-                                            </p>
-                                          </div>
-                                        </div>
-                                      )}
                                     </td>
                                   </tr>
-                                ))
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                    <OffcanvasMenu isOpen={isMenuOpen} closeOffcanvas={handleFilterIconClick} onFilterChange={handleFilterChange} />
-                  </div>
-                ) : (
-                  // kanban view
-                  <div className="flex">
-                    <div
-                      className={`flex-grow transition-all duration-300 ${isMenuOpen ? 'lg:mr-[18rem] xl:mr-[18rem] 2xl:mr-[18rem]' : 'mr-0'
-                        }`}
-                    >
-                      <div className="flex-grow h-[calc(100vh-200px)] overflow-y-auto pb-10 right-0 sm:mt-5 md:mt-5">
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 px-4">
-                          {loading ? (
-                            <div className="py-10 text-center">
-                              <div className="wrapper12">
-                                <div className="circle12"></div>
-                                <div className="circle12"></div>
-                                <div className="circle12"></div>
-                                <div className="shadow12"></div>
-                                <div className="shadow12"></div>
-                                <div className="shadow12"></div>
-                              </div>
-                            </div>
-                          ) : candidateData.length === 0 ? (
-                            <div className="py-10 text-center">
-                              <div className="flex flex-col items-center justify-center p-5">
-                                <p className="text-9xl rotate-180 text-blue-500"><CgInfo /></p>
-                                <p className="text-center text-lg font-normal">You don't have candidates yet. Create new candidate.</p>
-                                <p onClick={toggleSidebar} className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md">Add Candidate</p>
-                              </div>
-                            </div>
-                          ) : currentFilteredRows.length === 0 ? (
-                            <div className="col-span-3 py-10 text-center">
-                              <p className="text-lg font-normal">No data found.</p>
-                            </div>
-                          ) : (
-                            currentFilteredRows.map((candidate) => (
-                              <div key={candidate._id} className="bg-white border border-custom-blue shadow-md p-2 rounded">
-                                <div className="relative">
-                                  <div className="float-right">
-                                    <button onClick={() => toggleAction(candidate._id)}>
-                                      <MdMoreVert className="text-3xl mt-1" />
-                                    </button>
-                                    {actionViewMore === candidate._id && (
-                                      <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
-                                        <div className="space-y-1">
-                                          {objectPermissions.View && (
-                                            <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleCandidateClick(candidate)}>View</p>
-                                          )}
-                                          {objectPermissions.Edit && (
-                                            <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleEditClick(candidate)}>Edit</p>
-                                          )}
-                                          <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handlePopupClick(candidate.LastName)}>Schedule</p>
-                                        </div>
+                                ) : candidateData.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="7" className="py-10 text-center">
+                                      <div className="flex flex-col items-center justify-center p-5">
+                                        <p className="text-9xl rotate-180 text-blue-500"><CgInfo /></p>
+                                        <p className="text-center text-lg font-normal">You don't have candidates yet. Create new candidate.</p>
+                                        <p onClick={toggleSidebar} className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md">Add Candidate</p>
                                       </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="flex">
-                                  <div className="w-16 h-16 mt-3 ml-1 mr-3 overflow-hidden cursor-pointer">
-                                    <img
-                                      src={candidate.imageUrl || (candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage)}
-                                      alt="Candidate"
-                                      className="w-16 h-16 rounded-full object-cover"
-                                    />
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <div className="text-custom-blue text-lg cursor-pointer break-words" onClick={() => handleCandidateClick(candidate)}>
-                                      {candidate.LastName}
-                                    </div>
-                                    <div className="text-xs grid grid-cols-2 gap-2 items-start">
-                                      <div className="text-gray-400">Email</div>
-                                      <div>{candidate.Email}</div>
-                                      <div className="text-gray-400">Phone</div>
-                                      <div>{candidate.Phone}</div>
-                                      <div className="text-gray-400">Higher Qualification</div>
-                                      <div>{candidate.HigherQualification}</div>
-                                      <div className="text-gray-400">Current Experience</div>
-                                      <div>{candidate.CurrentExperience}</div>
-                                      <div className="text-gray-400">Skills/Technology</div>
-                                      <div>
+                                    </td>
+                                  </tr>
+                                ) : currentFilteredRows.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="7" className="py-10 text-center">
+                                      <p className="text-lg font-normal">No data found.</p>
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  currentFilteredRows.map((candidate) => (
+                                    <tr key={candidate._id} className="bg-white border-b cursor-pointer text-xs">
+                                      {isAssessmentContext && (
+                                        <td className="py-2 px-3">
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedCandidates.includes(candidate._id)}
+                                            onChange={() => handleSelectCandidate(candidate._id)}
+                                          />
+                                        </td>
+                                      )}
+                                      <td className={`${isAssessmentContext ? 'py-2' : 'py-2 px-6 text-custom-blue'}`}>
+                                        <div
+                                          className="flex items-center gap-3"
+                                          onClick={() => handleCandidateClick(candidate)}
+                                        >
+                                          <img
+                                            src={candidate.imageUrl || (candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage)}
+                                            alt="Candidate"
+                                            className="w-7 h-7 rounded-full object-cover"
+                                            onError={(e) => {
+                                              console.error('Image failed to load:', candidate.imageUrl);
+                                              e.target.src = candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage;
+                                            }}
+                                          />
+                                          {candidate.LastName}
+                                        </div>
+                                      </td>
+                                      <td className="py-2 px-6">{candidate.Email}</td>
+                                      <td className="py-2 px-6">{candidate.Phone}</td>
+                                      <td className="py-2 px-6">{candidate.HigherQualification}</td>
+                                      <td className="py-2 px-6">{candidate.CurrentExperience}</td>
+                                      <td className="py-2 px-6">
                                         {candidate.skills.map((skillEntry, index) => (
                                           <div key={index}>
                                             {skillEntry.skill}{index < candidate.skills.length - 1 && ', '}
                                           </div>
                                         ))}
+                                      </td>
+                                      <td className="py-2 px-6 relative">
+                                        <button onClick={() => toggleAction(candidate._id)}>
+                                          <FiMoreHorizontal className="text-3xl" />
+                                        </button>
+                                        {actionViewMore === candidate._id && (
+                                          <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
+                                            <div className="space-y-1">
+                                              {objectPermissions.View && (
+                                                <p
+                                                  className="hover:bg-gray-200 p-1 rounded pl-3"
+                                                  onClick={() => handleCandidateClick(candidate)}
+                                                >
+                                                  View
+                                                </p>
+                                              )}
+                                              {objectPermissions.Edit && (
+                                                <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleEditClick(candidate)}>Edit</p>
+                                              )}
+                                              <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handlePopupClick(candidate.LastName)}>
+                                                Schedule
+                                              </p>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <OffcanvasMenu isOpen={isMenuOpen} closeOffcanvas={handleFilterIconClick} onFilterChange={handleFilterChange} />
+                    </div>
+                  ) : (
+                    // kanban view
+                    <div className="flex">
+                      <div
+                        className={`flex-grow transition-all duration-300 ${isMenuOpen ? 'lg:mr-[18rem] xl:mr-[18rem] 2xl:mr-[18rem]' : 'mr-0'
+                          }`}
+                      >
+                        <div className="flex-grow h-[calc(100vh-200px)] overflow-y-auto pb-10 right-0 sm:mt-5 md:mt-5">
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 px-4">
+                            {loading ? (
+                              <div className="py-10 text-center">
+                                <div className="wrapper12">
+                                  <div className="circle12"></div>
+                                  <div className="circle12"></div>
+                                  <div className="circle12"></div>
+                                  <div className="shadow12"></div>
+                                  <div className="shadow12"></div>
+                                  <div className="shadow12"></div>
+                                </div>
+                              </div>
+                            ) : candidateData.length === 0 ? (
+                              <div className="py-10 text-center">
+                                <div className="flex flex-col items-center justify-center p-5">
+                                  <p className="text-9xl rotate-180 text-blue-500"><CgInfo /></p>
+                                  <p className="text-center text-lg font-normal">You don't have candidates yet. Create new candidate.</p>
+                                  <p onClick={toggleSidebar} className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md">Add Candidate</p>
+                                </div>
+                              </div>
+                            ) : currentFilteredRows.length === 0 ? (
+                              <div className="col-span-3 py-10 text-center">
+                                <p className="text-lg font-normal">No data found.</p>
+                              </div>
+                            ) : (
+                              currentFilteredRows.map((candidate) => (
+                                <div key={candidate._id} className="bg-white border border-custom-blue shadow-md p-2 rounded">
+                                  <div className="relative">
+                                    <div className="float-right">
+                                      <button onClick={() => toggleAction(candidate._id)}>
+                                        <MdMoreVert className="text-3xl mt-1" />
+                                      </button>
+                                      {actionViewMore === candidate._id && (
+                                        <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
+                                          <div className="space-y-1">
+                                            {objectPermissions.View && (
+                                              <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleCandidateClick(candidate)}>View</p>
+                                            )}
+                                            {objectPermissions.Edit && (
+                                              <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handleEditClick(candidate)}>Edit</p>
+                                            )}
+                                            <p className="hover:bg-gray-200 p-1 rounded pl-3" onClick={() => handlePopupClick(candidate.LastName)}>Schedule</p>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex">
+                                    <div className="w-16 h-16 mt-3 ml-1 mr-3 overflow-hidden cursor-pointer">
+                                      <img
+                                        src={candidate.imageUrl || (candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage)}
+                                        alt="Candidate"
+                                        className="w-16 h-16 rounded-full object-cover"
+                                        onError={(e) => {
+                                          console.error('Image failed to load:', candidate.imageUrl);
+                                          e.target.src = candidate.Gender === "Male" ? maleImage : candidate.Gender === "Female" ? femaleImage : genderlessImage;
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <div className="text-custom-blue text-lg cursor-pointer break-words" onClick={() => handleCandidateClick(candidate)}>
+                                        {candidate.LastName}
+                                      </div>
+                                      <div className="text-xs grid grid-cols-2 gap-2 items-start">
+                                        <div className="text-gray-400">Email</div>
+                                        <div>{candidate.Email}</div>
+                                        <div className="text-gray-400">Phone</div>
+                                        <div>{candidate.Phone}</div>
+                                        <div className="text-gray-400">Higher Qualification</div>
+                                        <div>{candidate.HigherQualification}</div>
+                                        <div className="text-gray-400">Current Experience</div>
+                                        <div>{candidate.CurrentExperience}</div>
+                                        <div className="text-gray-400">Skills/Technology</div>
+                                        <div>
+                                          {candidate.skills.map((skillEntry, index) => (
+                                            <div key={index}>
+                                              {skillEntry.skill}{index < candidate.skills.length - 1 && ', '}
+                                            </div>
+                                          ))}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))
-                          )}
+                              ))
+                            )}
+                          </div>
                         </div>
                       </div>
+                      <OffcanvasMenu isOpen={isMenuOpen} closeOffcanvas={handleFilterIconClick} onFilterChange={handleFilterChange} />
                     </div>
-                    <OffcanvasMenu isOpen={isMenuOpen} closeOffcanvas={handleFilterIconClick} onFilterChange={handleFilterChange} />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-      {sidebarOpen && (
-        <>
-          <div
-            className={"fixed inset-0 bg-black bg-opacity-15 z-50"}
-          >
-            <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
-              <Sidebar
-                onClose={closeSidebar}
-                onOutsideClick={handleOutsideClick}
-                onDataAdded={handleCandidateAdded}
-              />
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        </>)}
-
-      {selectedCandidate && (
-        <CandidateProfileDetails candidate={selectedCandidate} onCloseprofile={handleCloseProfile} />
-      )}
-      {selectedcandidate && (
-        <Editcandidate onClose={handleclose} candidate1={selectedcandidate} />
-      )}
-      {/* {showPopup && (
-        <Savenextpopup onClosepopup={onClosepopup} lastName={popupLastName} />
-      )} */}
-    </>
+          </section>
+        )}
+        {sidebarOpen && (
+          <>
+            <div
+              className={"fixed inset-0 bg-black bg-opacity-15 z-50"}
+            >
+              <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Sidebar
+                    onClose={closeSidebar}
+                    onOutsideClick={handleOutsideClick}
+                    onDataAdded={handleCandidateAdded}
+                  />
+                </Suspense>
+              </div>
+            </div>
+          </>
+        )}
+        {selectedCandidate && (
+          <Suspense fallback={<div>Loading CandidateProfileDetails...</div>}>
+            <CandidateProfileDetails candidate={selectedCandidate} onCloseprofile={handleCloseProfile} />
+          </Suspense>
+        )}
+        {selectedcandidate && (
+          <Suspense fallback={<div>Loading Editcandidate...</div>}>
+            <Editcandidate onClose={handleclose} candidate1={selectedcandidate} />
+          </Suspense>
+        )}
+        {/* {showPopup && (
+          <Suspense fallback={<div>Loading Savenextpopup...</div>}>
+            <Savenextpopup onClosepopup={onClosepopup} lastName={popupLastName} />
+          </Suspense>
+        )} */}
+      </div>
+    </ErrorBoundary>
   );
 };
 

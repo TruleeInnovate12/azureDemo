@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MdOutlineCancel } from "react-icons/md";
+
+import { ReactComponent as MdOutlineCancel } from '../../../icons/MdOutlineCancel.svg';
 
 const MasterProfileDetails = () => {
     const location = useLocation();

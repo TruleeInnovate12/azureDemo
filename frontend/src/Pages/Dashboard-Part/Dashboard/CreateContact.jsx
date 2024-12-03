@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { IoArrowBack } from "react-icons/io5";
 import { validateContactForm, getContactErrorMessage } from '../../../utils/ContactValidation.js';
+
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
 
 const CreateContact = ({ onClose, onContactAdded }) => {
     const [formData, setFormData] = useState({

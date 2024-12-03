@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { IoArrowBack } from "react-icons/io5";
 import axios from 'axios';
 import { validateContactForm, getContactErrorMessage } from '../../../utils/ContactValidation.js';
+
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
 
 const EditContactForm = ({ onClose, contact, onContactUpdated }) => {
     const [formData, setFormData] = useState(contact);

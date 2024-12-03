@@ -2,23 +2,24 @@ import { useState, useRef, useEffect, useCallback } from "react";
 // import "../../../../index.css";
 // import "../styles/tabs.scss";
 import { useNavigate } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
-import { IoIosArrowForward } from "react-icons/io";
-import { FaList } from "react-icons/fa6";
-import { TbLayoutGridRemove } from "react-icons/tb";
-import { IoMdSearch } from "react-icons/io";
 import Tooltip from "@mui/material/Tooltip";
 // import CandidateProfileDetails from "./CandidateProfileDetails";
-import { FaFilter } from "react-icons/fa";
 // import Sidebar from "../Candidate-Tab/CreateCandidate";
-import { MdMoreHoriz } from "react-icons/md";
-import { IoMdMore } from "react-icons/io";
 import axios from "axios";
-import { MdKeyboardArrowUp } from "react-icons/md";
-import { MdKeyboardArrowDown } from "react-icons/md";
 // import Editcandidate from "./EditCandidate";
 // import Savenextpopup from "./Save_&_next_popup";
-import { CgInfo } from "react-icons/cg";
+
+import { ReactComponent as IoIosArrowBack } from '../../../icons/IoIosArrowBack.svg';
+import { ReactComponent as IoIosArrowForward } from '../../../icons/IoIosArrowForward.svg';
+import { ReactComponent as LuFilter } from '../../../icons/LuFilter.svg';
+import { ReactComponent as MdKeyboardArrowUp } from '../../../icons/MdKeyboardArrowUp.svg';
+import { ReactComponent as MdKeyboardArrowDown } from '../../../icons/MdKeyboardArrowDown.svg';
+import { ReactComponent as CgInfo } from '../../../icons/CgInfo.svg';
+import { ReactComponent as TbLayoutGridRemove } from '../../../icons/TbLayoutGridRemove.svg';
+import { ReactComponent as FaList } from '../../../icons/FaList.svg';
+import { ReactComponent as IoMdSearch } from '../../../icons/IoMdSearch.svg';
+import { ReactComponent as FiMoreHorizontal } from '../../../icons/FiMoreHorizontal.svg';
+import { ReactComponent as MdMoreVert } from '../../../icons/MdMoreVert.svg';
 
 const OffcanvasMenu = ({ isOpen }) => {
   const [isStatusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -41,10 +42,10 @@ const OffcanvasMenu = ({ isOpen }) => {
     setSelectedStatusOptions(isStatusMainChecked ? [] : [...statusOptions]);
   };
 
-  const handleTechMainToggle = () => {
-    setTechMainChecked(!isTechMainChecked);
-    setSelectedTechOptions(isTechMainChecked ? [] : [...techOptions]);
-  };
+  // const handleTechMainToggle = () => {
+  //   setTechMainChecked(!isTechMainChecked);
+  //   setSelectedTechOptions(isTechMainChecked ? [] : [...techOptions]);
+  // };
 
   const handleExperienceMainToggle = () => {
     setIsExperienceMainChecked(!isExperienceMainChecked);
@@ -64,16 +65,16 @@ const OffcanvasMenu = ({ isOpen }) => {
     }
   };
 
-  const handleTechOptionToggle = (option) => {
-    const selectedIndex = selectedTechOptions.indexOf(option);
-    if (selectedIndex === -1) {
-      setSelectedTechOptions([...selectedTechOptions, option]);
-    } else {
-      const updatedOptions = [...selectedTechOptions];
-      updatedOptions.splice(selectedIndex, 1);
-      setSelectedTechOptions(updatedOptions);
-    }
-  };
+  // const handleTechOptionToggle = (option) => {
+  //   const selectedIndex = selectedTechOptions.indexOf(option);
+  //   if (selectedIndex === -1) {
+  //     setSelectedTechOptions([...selectedTechOptions, option]);
+  //   } else {
+  //     const updatedOptions = [...selectedTechOptions];
+  //     updatedOptions.splice(selectedIndex, 1);
+  //     setSelectedTechOptions(updatedOptions);
+  //   }
+  // };
 
   const handleExperienceOptionToggle = (option) => {
     const selectedIndex = selectedExperienceOptions.indexOf(option);
@@ -121,31 +122,31 @@ const OffcanvasMenu = ({ isOpen }) => {
     "10+ years",
   ];
 
-  const techOptions = [
-    "Python",
-    "Java",
-    "SQL",
-    "Artificial Intelligence (AI)",
-    "Machine Learning (ML)",
-    "Internet of Things (IoT)",
-    "Blockchain",
-    "Augmented Reality (AR)",
-    "Virtual Reality (VR)",
-    "Cybersecurity",
-    "Cloud Computing",
-    "Big Data Analytics",
-    "Quantum Computing",
-    "Natural Language Processing (NLP)",
-    "Data Science",
-    "DevOps (Development and Operations)",
-    "Software-defined Networking (SDN)",
-    "Predictive Analytics",
-    "Robotic Process Automation (RPA)",
-    "Edge Computing",
-    "5G Technology",
-    "Autonomous Vehicles",
-    "Biometric Authentication Technology",
-  ];
+  // const techOptions = [
+  //   "Python",
+  //   "Java",
+  //   "SQL",
+  //   "Artificial Intelligence (AI)",
+  //   "Machine Learning (ML)",
+  //   "Internet of Things (IoT)",
+  //   "Blockchain",
+  //   "Augmented Reality (AR)",
+  //   "Virtual Reality (VR)",
+  //   "Cybersecurity",
+  //   "Cloud Computing",
+  //   "Big Data Analytics",
+  //   "Quantum Computing",
+  //   "Natural Language Processing (NLP)",
+  //   "Data Science",
+  //   "DevOps (Development and Operations)",
+  //   "Software-defined Networking (SDN)",
+  //   "Predictive Analytics",
+  //   "Robotic Process Automation (RPA)",
+  //   "Edge Computing",
+  //   "5G Technology",
+  //   "Autonomous Vehicles",
+  //   "Biometric Authentication Technology",
+  // ];
 
   return (
     <div
@@ -316,7 +317,7 @@ const Inquirydesk = () => {
   }, [sidebarOpen, handleOutsideClick]);
 
   const navigate = useNavigate();
-  const [selectedCandidate] = useState(null);
+  // const [selectedCandidate] = useState(null);
 
   const handleCandidateClick = (candidate) => {
     navigate("/candidate-profiledetails", { state: { candidate } });
@@ -460,17 +461,17 @@ const Inquirydesk = () => {
     setActionViewMore((prev) => (prev === id ? null : id));
   };
 
-  const [selectedcandidate, setSelectedcandidate] = useState(null);
+  // const [selectedcandidate, setSelectedcandidate] = useState(null);
   const handleEditClick = (candidate) => {
-    setSelectedcandidate(candidate);
+    // setSelectedcandidate(candidate);
   };
 
-  const [popupLastName, setPopupLastName] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
+  // const [popupLastName, setPopupLastName] = useState("");
+  // const [showPopup, setShowPopup] = useState(false);
 
   const handlePopupClick = (lastName) => {
-    setPopupLastName(lastName);
-    setShowPopup(true);
+    // setPopupLastName(lastName);
+    // setShowPopup(true);
   };
 
   return (
@@ -571,7 +572,7 @@ const Inquirydesk = () => {
                         candidateData.length === 0 ? "none" : "auto",
                     }}
                   >
-                    <FaFilter
+                    <LuFilter
                       className={`${isMenuOpen ? "text-blue-500" : ""}`}
                     />
                   </span>
@@ -679,7 +680,7 @@ const Inquirydesk = () => {
                                 </td>
                               <td className="py-2 px-6 relative">
                                 <button onClick={() => toggleAction(candidate._id)}>
-                                  <MdMoreHoriz className="text-3xl" />
+                                  <FiMoreHorizontal className="text-3xl" />
                                 </button>
                                 {actionViewMore === candidate._id && (
                                   <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -747,7 +748,7 @@ const Inquirydesk = () => {
                                         toggleAction(candidate._id)
                                       }
                                     >
-                                      <IoMdMore className="text-3xl mt-1" />
+                                      <MdMoreVert className="text-3xl mt-1" />
                                     </button>
                                     {actionViewMore === candidate._id && (
                                       <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">

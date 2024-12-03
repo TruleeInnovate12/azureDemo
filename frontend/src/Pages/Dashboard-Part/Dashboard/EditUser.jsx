@@ -1,16 +1,16 @@
 import { useEffect, useState, useRef } from "react";
-import { TbCameraPlus } from "react-icons/tb";
-import { MdUpdate } from "react-icons/md";
-import { ImCancelCircle } from "react-icons/im";
-import ImageUploading from "react-images-uploading";
-import { MdArrowDropDown } from "react-icons/md";
+// import ImageUploading from "react-images-uploading";
 import "react-phone-input-2/lib/style.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaSearch } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { IoArrowBack } from "react-icons/io5";
 
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
+import { ReactComponent as MdUpdate } from '../../../icons/MdUpdate.svg';
+import { ReactComponent as TbCameraPlus } from '../../../icons/TbCameraPlus.svg';
+import { ReactComponent as MdOutlineCancel } from '../../../icons/MdOutlineCancel.svg';
+import { ReactComponent as MdArrowDropDown } from '../../../icons/MdArrowDropDown.svg';
+import { ReactComponent as IoMdSearch } from '../../../icons/IoMdSearch.svg';
 
 const EditUser = ({ isOpen, onClose, user }) => {
 
@@ -57,11 +57,10 @@ const EditUser = ({ isOpen, onClose, user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Use the userData state directly
     const dataToSubmit = {
       _id: userData._id,
-      Firstname: userData.FirstName, // Ensure the correct casing
-      Name: userData.LastName, // Ensure the correct casing
+      Firstname: userData.FirstName,
+      Name: userData.LastName,
       Gender: userData.Gender,
       UserId: userData.UserID,
       Password: userData.Password,
@@ -72,11 +71,10 @@ const EditUser = ({ isOpen, onClose, user }) => {
       Role: userData.Role,
       Timezone: userData.Timezone,
       Language: userData.Language,
-      CountryCode: userData.CountryCode, // Include if needed
-      // Add any other fields you want to submit
+      CountryCode: userData.CountryCode,
     };
 
-    console.log('Submitting form with userData:', dataToSubmit); // Log the data being sent
+    console.log('Submitting form with userData:', dataToSubmit);
 
     try {
       // Save contact data
@@ -90,17 +88,16 @@ const EditUser = ({ isOpen, onClose, user }) => {
   };
 
 
-  const maxNumber = 10;
+  // const maxNumber = 10;
 
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
   const onChange = (imageList, addUpdateIndex) => {
-    setImages(imageList);
+    // setImages(imageList);
     setUserData((prevState) => ({
       ...prevState,
       image: imageList.length > 0 ? imageList[0].data_url : "",
     }));
   };
-
 
   const [showDropdowngender, setShowDropdownGender] = useState(false);
   const genders = ["Male", "Female", "Others"];
@@ -527,7 +524,7 @@ const EditUser = ({ isOpen, onClose, user }) => {
                       {showDropdownCurrentRole && (
                         <div className="absolute bg-white border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10">
                           <div className="flex items-center border-b p-2">
-                            <FaSearch className="absolute left-2 text-gray-500" />
+                            <IoMdSearch className="absolute left-2 text-gray-500" />
                             <input
                               type="text"
                               placeholder="Search Current Role"
@@ -641,7 +638,7 @@ const EditUser = ({ isOpen, onClose, user }) => {
                             onClick={handleDeleteImage}
                             className="text-white"
                           >
-                            <ImCancelCircle className="text-xl mr-2 mb-1" />
+                              <MdOutlineCancel className="text-xl mr-2 mb-1" />
                           </button>
                         </div>
                       </>

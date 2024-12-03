@@ -1,17 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 // import Modal from "react-modal";
 // import { Menu, Transition } from "@headlessui/react";
-import { MdMoreHoriz } from "react-icons/md";
-import { IoMdSearch } from "react-icons/io";
 import Tooltip from "@mui/material/Tooltip";
-import { IoIosArrowBack } from "react-icons/io";
-import { IoIosArrowForward } from "react-icons/io";
-import { FiFilter } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
-import { IoArrowBack } from "react-icons/io5";
 // import axios from "axios";
 import PopupDetails from "./Masterdataviewpage";
 import { fetchMasterData } from "../../../utils/fetchMasterData.js";
+
+import { ReactComponent as IoIosArrowBack } from '../../../icons/IoIosArrowBack.svg';
+import { ReactComponent as IoIosArrowForward } from '../../../icons/IoIosArrowForward.svg';
+import { ReactComponent as LuFilter } from '../../../icons/LuFilter.svg';
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
+import { ReactComponent as IoMdSearch } from '../../../icons/IoMdSearch.svg';
+import { ReactComponent as FiMoreHorizontal } from '../../../icons/FiMoreHorizontal.svg';
 
 // pages for each tab add click
 import SkillMasterAdd from "./PlanMasterAdd";
@@ -478,7 +479,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                              <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -517,7 +518,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -558,7 +559,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                  <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -597,7 +598,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                    <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -636,7 +637,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                      <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -675,7 +676,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                        <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -714,7 +715,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                          <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -750,7 +751,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                            <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -789,7 +790,7 @@ const MasterData = () => {
                         >
                           <div>
                             <button onClick={() => toggleAction(item._id)}>
-                              <MdMoreHoriz className="text-3xl" />
+                                              <FiMoreHorizontal className="text-3xl" />
                             </button>
                             {actionViewMore === item._id && (
                               <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
@@ -1051,7 +1052,7 @@ const MasterData = () => {
               <div className="ml-2 text-xl sm:text-md md:text-md border rounded-md p-2">
                 <Tooltip title="Filter" enterDelay={300} leaveDelay={100} arrow>
                   <span>
-                    <FiFilter className="text-custom-blue" />
+                    <LuFilter className="text-custom-blue" />
                   </span>
                 </Tooltip>
               </div>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { MdOutlineCancel } from "react-icons/md";
+
+import { ReactComponent as MdOutlineCancel } from '../../../icons/MdOutlineCancel.svg';
 
 const PopupDetails = ({ selectedData, selectedTab, closeModal }) => {
   console.log(selectedData, "selectedData");

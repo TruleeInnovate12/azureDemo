@@ -1,21 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { FiFilter } from "react-icons/fi";
-import { IoMdSearch } from "react-icons/io";
 import Tooltip from "@mui/material/Tooltip";
-import { MdMoreHoriz } from "react-icons/md";
 import ContactProfileDetails from "./ContactProfileDetails";
-import { FaList } from "react-icons/fa6";
-import { TbLayoutGridRemove } from "react-icons/tb";
-import { CgInfo } from "react-icons/cg";
-import { IoMdMore } from "react-icons/io";
 import Sidebar from "./CreateContact.jsx";
 import EditContactForm from "./EditContactForm.jsx";
 import axios from "axios";
-import { LuFilterX } from "react-icons/lu";
 import { fetchMasterData } from "../../../utils/fetchMasterData.js";
-import { MdKeyboardArrowUp } from "react-icons/md";
-import { MdKeyboardArrowDown } from "react-icons/md";
+
+import { ReactComponent as IoIosArrowBack } from '../../../icons/IoIosArrowBack.svg';
+import { ReactComponent as IoIosArrowForward } from '../../../icons/IoIosArrowForward.svg';
+import { ReactComponent as LuFilterX } from '../../../icons/LuFilterX.svg';
+import { ReactComponent as MdKeyboardArrowUp } from '../../../icons/MdKeyboardArrowUp.svg';
+import { ReactComponent as MdKeyboardArrowDown } from '../../../icons/MdKeyboardArrowDown.svg';
+import { ReactComponent as FiMoreHorizontal } from '../../../icons/FiMoreHorizontal.svg';
+import { ReactComponent as CgInfo } from '../../../icons/CgInfo.svg';
+import { ReactComponent as MdMoreVert } from '../../../icons/MdMoreVert.svg';
+import { ReactComponent as TbLayoutGridRemove } from '../../../icons/TbLayoutGridRemove.svg';
+import { ReactComponent as FaList } from '../../../icons/FaList.svg';
+import { ReactComponent as IoMdSearch } from '../../../icons/IoMdSearch.svg';
+import { ReactComponent as FiFilter } from '../../../icons/FiFilter.svg';
+
 
 const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
   const [isStatusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -717,7 +720,7 @@ const Contact = ({ sharingPermissions, objectPermissions }) => {
                                       handleMoreClick(contact.UserId)
                                     }
                                   >
-                                    <MdMoreHoriz className="text-3xl" />
+                                    <FiMoreHorizontal className="text-3xl" />
                                   </button>
                                   {actionViewMore === contact.UserId && (
                                     <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2">
@@ -791,7 +794,7 @@ const Contact = ({ sharingPermissions, objectPermissions }) => {
                                 <div className="relative">
                                   <div className="float-right">
                                     <button onClick={() => toggleAction(contact._id)}>
-                                      <IoMdMore className="text-3xl mt-1" />
+                                      <MdMoreVert className="text-3xl mt-1" />
                                     </button>
                                     {actionViewMore === contact._id && (
                                 <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">

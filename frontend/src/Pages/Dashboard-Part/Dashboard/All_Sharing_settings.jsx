@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Tooltip from "@mui/material/Tooltip";
-import Sidebar from "./All_Sharing_settings_form.jsx";
-import axios from "axios";
-import Sharing_settings_popup from "./All_Sharing_settings_popup.jsx";
+// import Sidebar from "./All_Sharing_settings_form.jsx";
+// import axios from "axios";
+// import Sharing_settings_popup from "./All_Sharing_settings_popup.jsx";
 import { fetchMasterData } from '../../../utils/fetchMasterData.js';
 
 import { ReactComponent as IoIosArrowBack } from '../../../icons/IoIosArrowBack.svg';
@@ -263,8 +263,6 @@ const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
     );
 };
 
-
-
 const Sharing_settings = () => {
     useEffect(() => {
         document.title = "Candidate Tab";
@@ -298,22 +296,18 @@ const Sharing_settings = () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
     }, [sidebarOpen, handleOutsideClick]);
-    const [selectedCandidate, setSelectedCandidate] = useState(null);
+    // const [selectedCandidate, setSelectedCandidate] = useState(null);
 
-    const handleCandidateClick = (candidate) => {
-        setSelectedCandidate(candidate);
-    };
-    const handleCloseProfile = () => {
-        setSelectedCandidate(null);
-    };
+    // const handleCandidateClick = (candidate) => {
+    //     setSelectedCandidate(candidate);
+    // };
+    // const handleCloseProfile = () => {
+    //     setSelectedCandidate(null);
+    // };
 
     const [sharingSettings, setSharingSettings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [notification, setNotification] = useState("");
-
-    const userId = localStorage.getItem("userId");
-
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -412,9 +406,7 @@ const Sharing_settings = () => {
         .slice(startIndex, endIndex)
         .reverse();
 
-
-
-    const noResults = currentFilteredRows.length === 0 && searchQuery !== "";
+    // const noResults = currentFilteredRows.length === 0 && searchQuery !== "";
 
     const [tableVisible] = useState(true);
     const [viewMode, setViewMode] = useState("list");
@@ -439,16 +431,16 @@ const Sharing_settings = () => {
     };
 
 
-    const [selectedProfile, setSelectedProfile] = useState(null);
+    // const [selectedProfile, setSelectedProfile] = useState(null);
 
     const handleViewClick = (profile) => {
-        setSelectedProfile(profile);
+        // setSelectedProfile(profile);
         setActionViewMore(null);
     };
 
-    const handleClosePopup = () => {
-        setSelectedProfile(null);
-    };
+    // const handleClosePopup = () => {
+    //     setSelectedProfile(null);
+    // };
 
     // Detect screen size and set view mode to "kanban" for sm
     useEffect(() => {
@@ -475,7 +467,6 @@ const Sharing_settings = () => {
             toggleMenu();
         }
     };
-
 
     return (
         <>

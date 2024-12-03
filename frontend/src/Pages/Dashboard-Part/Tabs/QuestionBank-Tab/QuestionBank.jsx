@@ -11,8 +11,6 @@ import Cookies from "js-cookie";
 import { usePermissions } from '../../../../PermissionsContext';
 import { useMemo } from 'react';
 
-
-
 import { ReactComponent as IoIosArrowBack } from "../../../../icons/IoIosArrowBack.svg";
 import { ReactComponent as IoIosArrowForward } from "../../../../icons/IoIosArrowForward.svg";
 import { ReactComponent as FaList } from "../../../../icons/FaList.svg";
@@ -181,10 +179,12 @@ const QuestionBank = () => {
   }, []);
 
   const [questionCounts, setQuestionCounts] = useState({});
-  const fetchQuestionCounts = async () => {
+  const fetchQuestionCounts = useCallback(async () => {
     try {
       const allQuestions = await fetchFilterData("newquestion", sharingPermissions);
-      const counts = allQuestions.reduce((acc, question) => {
+      const questionsArray = Array.isArray(allQuestions) ? allQuestions : [];
+      
+      const counts = questionsArray.reduce((acc, question) => {
         const skill = question.Skill;
         if (!acc[skill]) {
           acc[skill] = 0;
@@ -192,46 +192,73 @@ const QuestionBank = () => {
         acc[skill]++;
         return acc;
       }, {});
+      
       setQuestionCounts(counts);
     } catch (error) {
       console.error("Error fetching question counts:", error);
+      setQuestionCounts({});
     }
-  };
+  }, [sharingPermissions]);
   const userId = Cookies.get("userId");
   const [createdLists, setCreatedLists] = useState([]);
   const [suggestedQuestions, setSuggestedQuestions] = useState([]);
+  const countMatchedQuestions = useCallback(() => {
+    if (!Array.isArray(suggestedQuestions) || !Array.isArray(createdLists) || 
+        suggestedQuestions.length === 0 || createdLists.length === 0) {
+      setMatchedQuestionsCount({});
+      return;
+    }
+
+    const counts = {};
+    suggestedQuestions.forEach((question) => {
+      const skill = question.Skill;
+      if (!counts[skill]) {
+        counts[skill] = 0;
+      }
+      
+      createdLists.forEach((list) => {
+        if (Array.isArray(list.questions) && list.questions.includes(question._id)) {
+          counts[skill]++;
+        }
+      });
+    });
+    
+    setMatchedQuestionsCount(counts);
+  }, [suggestedQuestions, createdLists]);
+
   useEffect(() => {
     const fetchSuggestedQuestions = async () => {
-        setLoading(true);
-        try {
-            const skillsData = await fetchMasterData("suggestedquestions");
-            setSuggestedQuestions(skillsData);
-            countMatchedQuestions();
-        } catch (error) {
-            console.error("Error fetching SkillsData:", error);
-        } finally {
-            setLoading(false);
-        }
+      setLoading(true);
+      try {
+        const skillsData = await fetchMasterData("suggestedquestions");
+        setSuggestedQuestions(skillsData);
+        countMatchedQuestions();
+      } catch (error) {
+        console.error("Error fetching SkillsData:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchSuggestedQuestions();
-}, []);
-const fetchLists = async () => {
-  try {
+  }, [countMatchedQuestions]);
+
+  const fetchLists = useCallback(async () => {
+    try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/lists/${userId}`);
-      setCreatedLists(response.data);
-      countMatchedQuestions(); 
-  } catch (error) {
+      setCreatedLists(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
       console.error('Error fetching lists:', error);
-  }
-};
-  useEffect(() => {
-    fetchLists();
+      setCreatedLists([]);
+    }
   }, [userId]);
 
+  useEffect(() => {
+    fetchLists();
+  }, [fetchLists]);
 
   useEffect(() => {
     fetchQuestionCounts();
-  }, [sharingPermissions]);
+  }, [fetchQuestionCounts]);
 
   const getQuestionCountForSkill = (skillName) => {
     return questionCounts[skillName] || 0;
@@ -240,7 +267,7 @@ const fetchLists = async () => {
   useEffect(() => {
     fetchSuggestedQuestionsCount();
     fetchQuestionCounts();
-  }, [fetchSuggestedQuestionsCount]);
+  }, [fetchSuggestedQuestionsCount, fetchQuestionCounts]);
 
   const handleDataAdded = () => {
     fetchSuggestedQuestionsCount();
@@ -263,30 +290,6 @@ const fetchLists = async () => {
     fetchSkillsData();
   }, []);
   const [matchedQuestionsCount, setMatchedQuestionsCount] = useState({});
-
-// New function to count matched questions
-const countMatchedQuestions = () => {
-  if (suggestedQuestions.length === 0 || createdLists.length === 0) {
-      return; // Exit if there's no data to process
-  }
-  const counts = {};
-  suggestedQuestions.forEach((question) => {
-      const skill = question.Skill;
-      if (!counts[skill]) {
-          counts[skill] = 0;
-      }
-      createdLists.forEach((list) => {
-          if (list.questions.includes(question._id)) {
-              counts[skill]++;
-          }
-      });
-  });
-  setMatchedQuestionsCount(counts);
-};
-
-useEffect(() => {
-  countMatchedQuestions();
-}, [suggestedQuestions, createdLists]);
 
   const getMyQuestionCountForSkill = (skillName) => {
     return suggestedQuestionsCount[skillName] || 0;
@@ -311,9 +314,9 @@ useEffect(() => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const closeSidebar = () => {
+  const closeSidebar = useCallback(() => {
     setSidebarOpen(false);
-  };
+  }, []);
 
   const handleOutsideClick = useCallback(
     (event) => {

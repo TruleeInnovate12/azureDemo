@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { FaAngleDown } from "react-icons/fa6";
+// import { IoMdArrowRoundBack } from "react-icons/io";
+// import { FaAngleDown } from "react-icons/fa6";
 import axios from 'axios';
 
 const Profile_Edit_Form = ({ onClose, profileData }) => {
@@ -162,7 +162,7 @@ const Profile_Edit_Form = ({ onClose, profileData }) => {
       {/* Header */}
       <div className="flex items-center p-4 border-b">
         <button onClick={onClose} className="text-xl flex items-center">
-          <IoMdArrowRoundBack />
+          {/* <IoMdArrowRoundBack /> */}
           <span className="ml-2">Profile Form</span>
         </button>
         <div className="flex-1"></div>
@@ -250,7 +250,7 @@ const Profile_Edit_Form = ({ onClose, profileData }) => {
               <div className="flex justify-between items-center py-2 px-4">
                 <h4 className="text-xl font-semibold">Tabs</h4>
                 <p className="text-sm cursor-pointer" onClick={toggleTableVisibility}>
-                  <FaAngleDown />
+                  {/* <FaAngleDown /> */}
                 </p>
               </div>
               <div className="border-b "></div>
@@ -298,7 +298,7 @@ const Profile_Edit_Form = ({ onClose, profileData }) => {
                 <h4 className="text-md font-semibold">Objects</h4>
 
                 <p className="text-sm cursor-pointer" onClick={toggleObjectsTableVisibility}>
-                  <FaAngleDown />
+                  {/* <FaAngleDown /> */}
                 </p>
               </div>
               <div className="border-b "></div>

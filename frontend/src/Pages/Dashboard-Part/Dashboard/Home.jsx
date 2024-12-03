@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import ErrorBoundary from '../../../ErrorBoundary.jsx';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 // import axios from "axios";
 import React, { Suspense } from 'react';
 import "./Home.scss";
@@ -688,11 +688,11 @@ const Home = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
-  const handleOutsideClick = (event) => {
+  const handleOutsideClick = useCallback((event) => {
     if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
       closeSidebar();
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (sidebarOpen) {
@@ -704,7 +704,7 @@ const Home = () => {
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [sidebarOpen]);
+  }, [sidebarOpen, handleOutsideClick]);
 
   const closeSidebar = () => {
     setSidebarOpen(false);

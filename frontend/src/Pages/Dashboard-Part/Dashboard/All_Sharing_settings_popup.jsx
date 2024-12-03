@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { MdOutlineCancel } from "react-icons/md";
 import axios from 'axios';
+
+import { ReactComponent as MdOutlineCancel } from '../../../icons/MdOutlineCancel.svg';
 
 const Sharing_settings_popup = ({ onClose, profile }) => {
   const [editMode, setEditMode] = useState(null);
@@ -31,7 +32,6 @@ const Sharing_settings_popup = ({ onClose, profile }) => {
 
   const handleEditClick = async (profileIndex) => {
     if (editMode === profileIndex) {
-      // Save changes
       const updatedProfile = profiles[profileIndex];
       try {
         const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/sharing-settings/${updatedProfile._id}`, updatedProfile);

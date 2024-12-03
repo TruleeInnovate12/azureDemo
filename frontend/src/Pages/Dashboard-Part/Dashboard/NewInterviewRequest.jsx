@@ -1,17 +1,17 @@
 import React, { forwardRef, useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-phone-input-2/lib/style.css";
 
-const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
-  const navigate = useNavigate();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [skillsData, setSkillsData] = useState(() => {
-    const storedSkillsData = localStorage.getItem("skillsData");
+const NewInterviewRequest = forwardRef(({ onClose, onOutsideClick }, ref) => {
+  // const navigate = useNavigate();
+  // const [showDropdown, setShowDropdown] = useState(false);
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const [skillsData, setSkillsData] = useState(() => {
+  //   const storedSkillsData = localStorage.getItem("skillsData");
 
-    return storedSkillsData ? JSON.parse(storedSkillsData) : [];
-  });
+  //   return storedSkillsData ? JSON.parse(storedSkillsData) : [];
+  // });
 
   //storeing CandidateData
   const [formData, setFormData] = useState({
@@ -34,39 +34,39 @@ const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
     return storecandidateData ? JSON.parse(storecandidateData) : [];
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
 
-    // Check if the changed field is 'gender'
-    if (name === "gender") {
-      localStorage.setItem("gender", value);
-    }
-  };
+  //   // Check if the changed field is 'gender'
+  //   if (name === "gender") {
+  //     localStorage.setItem("gender", value);
+  //   }
+  // };
 
-  const maxNumber = 10;
+  // const maxNumber = 10;
 
-  const [images, setImages] = useState([]);
-  const onChange = (imageList, addUpdateIndex) => {
-    setImages(imageList);
-    setFormData((prevState) => ({
-      ...prevState,
-      image: imageList.length > 0 ? imageList[0].data_url : "",
-    }));
-  };
+  // const [images, setImages] = useState([]);
+  // const onChange = (imageList, addUpdateIndex) => {
+  //   setImages(imageList);
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     image: imageList.length > 0 ? imageList[0].data_url : "",
+  //   }));
+  // };
 
-  const handlecandidateChange = (e) => {
-    const candidate = e.target.value;
-    setFormData((prevState) => ({
-      ...prevState,
-      candidate: candidate,
-    }));
-  };
+  // const handlecandidateChange = (e) => {
+  //   const candidate = e.target.value;
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     candidate: candidate,
+  //   }));
+  // };
 
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
 
   const handleSubmit = (e, shouldSchedule) => {
     e.preventDefault();
@@ -89,28 +89,28 @@ const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
 
   // navigate(path);
 
-  const FilteredData = () => {
-    return skillsData.filter(
-      (user) =>
-        user.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (user.jobdescription &&
-          user.jobdescription
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (user.maxexperience &&
-          user.maxexperience
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (user.skills &&
-          user.skills.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (user.additionalnotes &&
-          user.additionalnotes
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()))
-    );
-  };
+  // const FilteredData = () => {
+  //   return skillsData.filter(
+  //     (user) =>
+  //       user.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       (user.jobdescription &&
+  //         user.jobdescription
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (user.maxexperience &&
+  //         user.maxexperience
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (user.skills &&
+  //         user.skills.toLowerCase().includes(searchQuery.toLowerCase())) ||
+  //       (user.additionalnotes &&
+  //         user.additionalnotes
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase()))
+  //   );
+  // };
 
-  const filteredData = FilteredData();
+  // const filteredData = FilteredData();
 
   const dropdownRef = useRef(null);
 
@@ -121,7 +121,7 @@ const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
         !dropdownRef.current.contains(event.target) &&
         !event.target.classList.contains("add-new-button")
       ) {
-        setShowDropdown(false);
+        // setShowDropdown(false);
       }
     };
 
@@ -132,156 +132,156 @@ const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
   }, []);
 
   // skills table
-  const [rows, setRows] = useState([
-    { skill: "", experience: "", expertise: "" },
-    { skill: "", experience: "", expertise: "" },
-    { skill: "", experience: "", expertise: "" },
-  ]);
-  const [currentRow, setCurrentRow] = useState(0);
-  const [currentColumn, setCurrentColumn] = useState(0);
-  const [fieldsRequired, setFieldsRequired] = useState(true);
+  // const [rows, setRows] = useState([
+  //   { skill: "", experience: "", expertise: "" },
+  //   { skill: "", experience: "", expertise: "" },
+  //   { skill: "", experience: "", expertise: "" },
+  // ]);
+  // const [currentRow, setCurrentRow] = useState(0);
+  // const [currentColumn, setCurrentColumn] = useState(0);
+  // const [fieldsRequired, setFieldsRequired] = useState(true);
 
-  const updateRows = (newRows) => {
-    setRows(newRows);
-    localStorage.setItem("rows", JSON.stringify(newRows));
-  };
+  // const updateRows = (newRows) => {
+  //   setRows(newRows);
+  //   localStorage.setItem("rows", JSON.stringify(newRows));
+  // };
 
-  const handleSelectChange = (event, columnName) => {
-    const { textContent } = event.target.options[event.target.selectedIndex];
+  // const handleSelectChange = (event, columnName) => {
+  //   const { textContent } = event.target.options[event.target.selectedIndex];
 
-    const emptyRowIndex = rows.findIndex(
-      (row) => row.skill === "" || row.experience === "" || row.expertise === ""
-    );
-    if (emptyRowIndex === -1) {
-      alert(" Please create a new row to add more data.");
-      return;
-    }
+  //   const emptyRowIndex = rows.findIndex(
+  //     (row) => row.skill === "" || row.experience === "" || row.expertise === ""
+  //   );
+  //   if (emptyRowIndex === -1) {
+  //     alert(" Please create a new row to add more data.");
+  //     return;
+  //   }
 
-    if (rows.length > 1) {
-      setFieldsRequired(false);
-    } else {
-      setFieldsRequired(true);
-    }
+  //   if (rows.length > 1) {
+  //     setFieldsRequired(false);
+  //   } else {
+  //     setFieldsRequired(true);
+  //   }
 
-    const updatedRows = [...rows];
-    updatedRows[currentRow][columnName] = textContent;
+  //   const updatedRows = [...rows];
+  //   updatedRows[currentRow][columnName] = textContent;
 
-    setRows(updatedRows);
-    event.target.value = "";
+  //   setRows(updatedRows);
+  //   event.target.value = "";
 
-    setCurrentColumn((prevColumn) => {
-      const nextColumn = (prevColumn + 1) % 3;
-      if (nextColumn === 0) {
-        setCurrentRow((prevRow) => prevRow + 1);
-      }
-      return nextColumn;
-    });
+  //   setCurrentColumn((prevColumn) => {
+  //     const nextColumn = (prevColumn + 1) % 3;
+  //     if (nextColumn === 0) {
+  //       setCurrentRow((prevRow) => prevRow + 1);
+  //     }
+  //     return nextColumn;
+  //   });
 
-    const updatedFormData = { ...formData };
-    if (!updatedFormData.skills) {
-      updatedFormData.skills = [];
-    }
-    if (!updatedFormData.skills[currentRow]) {
-      updatedFormData.skills[currentRow] = {};
-    }
-    updatedFormData.skills[currentRow][columnName] = textContent;
-    setFormData(updatedFormData);
-    updateRows(updatedRows);
-  };
+  //   const updatedFormData = { ...formData };
+  //   if (!updatedFormData.skills) {
+  //     updatedFormData.skills = [];
+  //   }
+  //   if (!updatedFormData.skills[currentRow]) {
+  //     updatedFormData.skills[currentRow] = {};
+  //   }
+  //   updatedFormData.skills[currentRow][columnName] = textContent;
+  //   setFormData(updatedFormData);
+  //   updateRows(updatedRows);
+  // };
 
-  const addRow = () => {
-    setRows((prevRows) => [
-      ...prevRows,
-      { skill: "", experience: "", expertise: "" },
-    ]);
-  };
+  // const addRow = () => {
+  //   setRows((prevRows) => [
+  //     ...prevRows,
+  //     { skill: "", experience: "", expertise: "" },
+  //   ]);
+  // };
 
   //    date
 
-  const [startDate, setStartDate] = useState(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [showTimeInputs, setShowTimeInputs] = useState(false);
+  // const [startDate, setStartDate] = useState(null);
+  // const [startTime, setStartTime] = useState("");
+  // const [endTime, setEndTime] = useState("");
+  // const [showTimeInputs, setShowTimeInputs] = useState(false);
 
-  const handleDateChange = (date) => {
-    setStartDate(date);
-    setShowTimeInputs(true);
-  };
+  // const handleDateChange = (date) => {
+  //   setStartDate(date);
+  //   setShowTimeInputs(true);
+  // };
 
-  const handleStartTimeChange = (e) => {
-    setStartTime(e.target.value);
-  };
+  // const handleStartTimeChange = (e) => {
+  //   setStartTime(e.target.value);
+  // };
 
-  const handleEndTimeChange = (e) => {
-    setEndTime(e.target.value);
-  };
+  // const handleEndTimeChange = (e) => {
+  //   setEndTime(e.target.value);
+  // };
 
-  const [selectedGender, setSelectedGender] = useState("");
-  const [showDropdowngender, setShowDropdownGender] = useState(false);
-  const genders = ["Male", "Female", "Others"];
+  // const [selectedGender, setSelectedGender] = useState("");
+  // const [showDropdowngender, setShowDropdownGender] = useState(false);
+  // const genders = ["Male", "Female", "Others"];
 
-  const toggleDropdowngender = () => {
-    setShowDropdownGender(!showDropdowngender);
-  };
+  // const toggleDropdowngender = () => {
+  //   setShowDropdownGender(!showDropdowngender);
+  // };
 
-  const handleGenderSelect = (gender) => {
-    setSelectedGender(gender);
-    setFormData((prevData) => ({
-      ...prevData,
-      gender: gender,
-    }));
-    setShowDropdownGender(false);
-  };
+  // const handleGenderSelect = (gender) => {
+  //   setSelectedGender(gender);
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     gender: gender,
+  //   }));
+  //   setShowDropdownGender(false);
+  // };
 
-  const [selectedCollege, setSelectedCollege] = useState("");
+  // const [selectedCollege, setSelectedCollege] = useState("");
   const [showDropdownCollege, setShowDropdownCollege] = useState(false);
-  const [containerHeight, setContainerHeight] = useState("");
+  // const [containerHeight, setContainerHeight] = useState("");
 
-  const toggleDropdown = () => {
-    setShowDropdownCollege(!showDropdownCollege);
-  };
+  // const toggleDropdown = () => {
+  //   setShowDropdownCollege(!showDropdownCollege);
+  // };
 
-  const handleCollegeSelect = (college) => {
-    setSelectedCollege(college);
-    setContainerHeight("auto"); // Update the selected college state
+  // const handleCollegeSelect = (college) => {
+  //   setSelectedCollege(college);
+  //   setContainerHeight("auto"); // Update the selected college state
 
-    // Update the formData state with the selected college
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      college: college,
-    }));
+  //   // Update the formData state with the selected college
+  //   setFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     college: college,
+  //   }));
 
-    setShowDropdownCollege(false); // Close the dropdown
-  };
+  //   setShowDropdownCollege(false); // Close the dropdown
+  // };
 
-  const [selectedQualification, setSelectedQualification] = useState("");
+  // const [selectedQualification, setSelectedQualification] = useState("");
   const [showDropdownQualification, setShowDropdownQualification] =
     useState(false);
 
-  const handleQualificationSelect = (qualification) => {
-    setSelectedQualification(qualification.name);
-    setFormData((prevData) => ({
-      ...prevData,
-      qualification: qualification.name, // Update formData with selected qualification
-    }));
-    setShowDropdownQualification(false);
-  };
+  // const handleQualificationSelect = (qualification) => {
+  //   setSelectedQualification(qualification.name);
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     qualification: qualification.name, // Update formData with selected qualification
+  //   }));
+  //   setShowDropdownQualification(false);
+  // };
 
-  const toggleDropdownQualification = () => {
-    setShowDropdownQualification(!showDropdownQualification);
-  };
+  // const toggleDropdownQualification = () => {
+  //   setShowDropdownQualification(!showDropdownQualification);
+  // };
 
-  const [textareaValue, setTextareaValue] = useState("");
-  const handleChangedescription = (event) => {
-    setTextareaValue(event.target.value);
-    // Adjust textarea height dynamically based on content
-    event.target.style.height = "auto";
-    event.target.style.height = event.target.scrollHeight + "px";
-  };
+  // const [textareaValue, setTextareaValue] = useState("");
+  // const handleChangedescription = (event) => {
+  //   setTextareaValue(event.target.value);
+  //   // Adjust textarea height dynamically based on content
+  //   event.target.style.height = "auto";
+  //   event.target.style.height = event.target.scrollHeight + "px";
+  // };
 
   return (
     <div
-    ref={ref}
+      ref={ref}
       className="fixed inset-0 bg-black bg-opacity-15 z-50"
     >
       <div
@@ -314,120 +314,120 @@ const NewInterviewRequest = forwardRef(({onClose, onOutsideClick }, ref) => {
         {/* Content */}
         <div className="fixed top-16 bottom-16 overflow-auto p-4 w-full text-sm">
           <form className="group" onSubmit={handleSubmit} noValidate>
-           
-              <div>
-                {/* Title */}
-                <div className="flex gap-5 mb-5 ">
-                  <div>
-                    <label
-                      htmlFor=" title"
-                      className="block font-medium leading-6 text-gray-900 w-36"
-                    >
-                      Title
-                    </label>
-                  </div>
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400">Senior Salesforce Developer</p>
-                  </div>
-                </div>
-                {/*Interview Type */}
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block font-medium leading-6 text-gray-900 w-36"
-                    >
-                      Interview Type
-                    </label>
-                  </div>
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400">Face-to-Face</p>
-                  </div>
-                </div>
-                {/*  Position */}
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="position"
-                      className="block text-sm font-medium leading-6 text-gray-900  w-36"
-                    >
-                      Position
-                    </label>
-                  </div>
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400">Senior Salesforce Developer</p>
-                  </div>
-                </div>
-                {/*  Candidate */}
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="candidate"
-                      className="block font-medium leading-6 text-gray-900  w-36"
-                    >
-                      Candidate
-                    </label>
-                  </div>
 
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400"> Jyothi</p>
-                  </div>
+            <div>
+              {/* Title */}
+              <div className="flex gap-5 mb-5 ">
+                <div>
+                  <label
+                    htmlFor=" title"
+                    className="block font-medium leading-6 text-gray-900 w-36"
+                  >
+                    Title
+                  </label>
                 </div>
-                {/*dateandtime*/}
-
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="title"
-                      className="block mb-2 font-medium text-gray-900 w-36"
-                    >
-                      Date&Time
-                    </label>
-                  </div>
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400"> 22/05/2024 11:50 AM</p>
-                  </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400">Senior Salesforce Developer</p>
+                </div>
+              </div>
+              {/*Interview Type */}
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block font-medium leading-6 text-gray-900 w-36"
+                  >
+                    Interview Type
+                  </label>
+                </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400">Face-to-Face</p>
+                </div>
+              </div>
+              {/*  Position */}
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="position"
+                    className="block text-sm font-medium leading-6 text-gray-900  w-36"
+                  >
+                    Position
+                  </label>
+                </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400">Senior Salesforce Developer</p>
+                </div>
+              </div>
+              {/*  Candidate */}
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="candidate"
+                    className="block font-medium leading-6 text-gray-900  w-36"
+                  >
+                    Candidate
+                  </label>
                 </div>
 
-                {/*  Duration */}
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="title"
-                      className="block mb-2 font-medium text-gray-900  w-36"
-                    >
-                      Duration
-                    </label>
-                  </div>
-                  <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400">60 min</p>
-                  </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400"> Jyothi</p>
                 </div>
+              </div>
+              {/*dateandtime*/}
 
-                {/* Description/Instructions */}
-                <div className="flex gap-5 mb-5">
-                  <div>
-                    <label
-                      htmlFor="jobdescription"
-                      className="block mb-2 font-medium text-gray-900  w-36"
-                    >
-                      Description/Instructions
-                    </label>
-                  </div>
-
-                  <div className="flex-grow border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
-                    <p className="text-gray-400">
-                      Prepare for the interview by reviewing the job description
-                      and researching the company. Dress appropriately and
-                      arrive on time.During the interview, be confident,listen
-                      carefully,and provide clear,concise answers.
-                    </p>
-                  </div>
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="title"
+                    className="block mb-2 font-medium text-gray-900 w-36"
+                  >
+                    Date&Time
+                  </label>
+                </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400"> 22/05/2024 11:50 AM</p>
                 </div>
               </div>
 
-           {/* Footer */}
-           <div className="footer-buttons flex justify-end">
+              {/*  Duration */}
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="title"
+                    className="block mb-2 font-medium text-gray-900  w-36"
+                  >
+                    Duration
+                  </label>
+                </div>
+                <div className="flex-grow  border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400">60 min</p>
+                </div>
+              </div>
+
+              {/* Description/Instructions */}
+              <div className="flex gap-5 mb-5">
+                <div>
+                  <label
+                    htmlFor="jobdescription"
+                    className="block mb-2 font-medium text-gray-900  w-36"
+                  >
+                    Description/Instructions
+                  </label>
+                </div>
+
+                <div className="flex-grow border-b border-gray-300 focus:border-black focus:outline-none mb-5 w-full">
+                  <p className="text-gray-400">
+                    Prepare for the interview by reviewing the job description
+                    and researching the company. Dress appropriately and
+                    arrive on time.During the interview, be confident,listen
+                    carefully,and provide clear,concise answers.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="footer-buttons flex justify-end">
               <button
                 type="submit"
                 style={{

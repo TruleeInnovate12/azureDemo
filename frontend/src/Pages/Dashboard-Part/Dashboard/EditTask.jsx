@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { validateTaskForm, getErrorMessage } from '../../../utils/AppTaskValidation';
-import { MdArrowDropDown } from "react-icons/md";
-import { IoArrowBack } from "react-icons/io5";
+
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
+import { ReactComponent as MdArrowDropDown } from '../../../icons/MdArrowDropDown.svg';
 
 const EditTask = ({ onClose, taskData, onTaskUpdated }) => {
     const [formData, setFormData] = useState({

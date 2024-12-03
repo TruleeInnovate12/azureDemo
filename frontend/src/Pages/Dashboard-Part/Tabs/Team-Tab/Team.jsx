@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "../../../../index.css";
+import React, { Suspense } from 'react';
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import Sidebar from "../Team-Tab/CreateTeams";
+// import Sidebar from "../Team-Tab/CreateTeams";
 import axios from "axios";
-import Editteams from "./EditTeam";
-import TeamProfileDetails from "./TeamProfileDetails";
+// import Editteams from "./EditTeam";
+// import TeamProfileDetails from "./TeamProfileDetails";
 import maleImage from '../../../Dashboard-Part/Images/man.png';
 import femaleImage from '../../../Dashboard-Part/Images/woman.png';
 import genderlessImage from '../../../Dashboard-Part/Images/transgender.png';
@@ -13,6 +14,8 @@ import { fetchFilterData } from '../../../../utils/dataUtils.js';
 import { fetchMasterData } from '../../../../utils/fetchMasterData.js';
 import { usePermissions } from '../../../../PermissionsContext';
 import { useMemo } from 'react';
+import ErrorBoundary from '../../../../ErrorBoundary.jsx';
+
 
 import { ReactComponent as IoIosArrowBack } from '../../../../icons/IoIosArrowBack.svg';
 import { ReactComponent as IoIosArrowForward } from '../../../../icons/IoIosArrowForward.svg';
@@ -26,6 +29,10 @@ import { ReactComponent as MdKeyboardArrowUp } from '../../../../icons/MdKeyboar
 import { ReactComponent as MdKeyboardArrowDown } from '../../../../icons/MdKeyboardArrowDown.svg';
 import { ReactComponent as CgInfo } from '../../../../icons/CgInfo.svg';
 import { ReactComponent as LuFilterX } from '../../../../icons/LuFilterX.svg';
+
+const TeamProfileDetails = React.lazy(() => import('./TeamProfileDetails'));
+const Sidebar = React.lazy(() => import('../Team-Tab/CreateTeams'));
+const Editteams = React.lazy(() => import('./EditTeam'));
 
 const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
   const [isStatusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -462,7 +469,8 @@ const Team = () => {
 
   const [showMainContent, setShowMainContent] = useState(true);
   return (
-    <>
+    <ErrorBoundary> 
+      <div>
 
       {showMainContent && !selectedTeam && (
         <section>
@@ -850,12 +858,16 @@ const Team = () => {
           </div>
         </section>
       )}
-      {selectedcandidate && (
-        <Editteams onClose={handleclose} candidate1={selectedcandidate} availability={selectedcandidate.availability} />
-      )}
+        {selectedcandidate && (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Editteams onClose={handleclose} candidate1={selectedcandidate} availability={selectedcandidate.availability} />
+          </Suspense>
+        )}
 
       {selectedTeam && (
-        <TeamProfileDetails candidate={selectedTeam} onCloseprofile={handleCloseProfile} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <TeamProfileDetails candidate={selectedTeam} onCloseprofile={handleCloseProfile} />
+        </Suspense>
       )}
 
       {sidebarOpen && (
@@ -864,17 +876,20 @@ const Team = () => {
             className={"fixed inset-0 bg-black bg-opacity-15 z-50"}
           >
             <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
-              <Sidebar
-                onClose={closeSidebar}
-                onOutsideClick={handleOutsideClick}
-                onDataAdded={handleDataAdded}
-              />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Sidebar
+                  onClose={closeSidebar}
+                  onOutsideClick={handleOutsideClick}
+                  onDataAdded={handleDataAdded}
+                />
+              </Suspense>
             </div>
           </div>
         </>
       )}
 
-    </>
+      </div>
+    </ErrorBoundary>
   );
 };
 

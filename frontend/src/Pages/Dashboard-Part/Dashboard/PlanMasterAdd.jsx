@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { MdArrowDropDown } from "react-icons/md";
+
+import { ReactComponent as MdArrowDropDown } from '../../../icons/MdArrowDropDown.svg';
 
 const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
   const [selectedPlanMasterName, setSelectedPlanMasterName] = useState("");
@@ -117,7 +118,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                      Basic
+                        Basic
                       </div>
                       <div
                         className="py-2 px-4 cursor-pointer hover:bg-gray-100"
@@ -129,7 +130,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                      Advanced
+                        Advanced
                       </div>
                     </div>
                   )}
@@ -193,65 +194,65 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
               </div>
               {/* Assessment Tests Access */}
               <div className="flex items-center mb-5">
-  <label className="block text-sm font-medium text-gray-700 w-1/3 mr-4">
-    Assessment Tests Access
-  </label>
-  <div className="relative flex-grow">
-    <div className="relative">
-      <input
-        type="text"
-        className="border-b focus:outline-none mb-5 w-full"
-        value={selectedAssessmentTestsAccess}
-        readOnly
-        onClick={() => toggleDropdown(setShowDropdownAssessmentTests)}
-      />
-      <MdArrowDropDown
-        className="absolute right-0 top-0 cursor-pointer"
-        onClick={() => toggleDropdown(setShowDropdownAssessmentTests)}
-      />
-    </div>
-    {showDropdownAssessmentTests && (
-      <div className="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-md">
-        <div
-          className="py-2 px-4 cursor-pointer hover:bg-gray-100"
-          onClick={() =>
-            handleSelect(
-              setSelectedAssessmentTestsAccess,
-              setShowDropdownAssessmentTests,
-              " No Test"
-            )
-          }
-        >
-         No Test 
-        </div>
-        <div
-          className="py-2 px-4 cursor-pointer hover:bg-gray-100"
-          onClick={() =>
-            handleSelect(
-              setSelectedAssessmentTestsAccess,
-              setShowDropdownAssessmentTests,
-              " Standard Test"
-            )
-          }
-        >
-        Standard Test
-        </div>
-        <div
-          className="py-2 px-4 cursor-pointer hover:bg-gray-100"
-          onClick={() =>
-            handleSelect(
-              setSelectedAssessmentTestsAccess,
-              setShowDropdownAssessmentTests,
-              " Custom Tests"
-            )
-          }
-        >
-        Custom Tests
-        </div>
-      </div>
-    )}
-  </div>
-</div>
+                <label className="block text-sm font-medium text-gray-700 w-1/3 mr-4">
+                  Assessment Tests Access
+                </label>
+                <div className="relative flex-grow">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="border-b focus:outline-none mb-5 w-full"
+                      value={selectedAssessmentTestsAccess}
+                      readOnly
+                      onClick={() => toggleDropdown(setShowDropdownAssessmentTests)}
+                    />
+                    <MdArrowDropDown
+                      className="absolute right-0 top-0 cursor-pointer"
+                      onClick={() => toggleDropdown(setShowDropdownAssessmentTests)}
+                    />
+                  </div>
+                  {showDropdownAssessmentTests && (
+                    <div className="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-md">
+                      <div
+                        className="py-2 px-4 cursor-pointer hover:bg-gray-100"
+                        onClick={() =>
+                          handleSelect(
+                            setSelectedAssessmentTestsAccess,
+                            setShowDropdownAssessmentTests,
+                            " No Test"
+                          )
+                        }
+                      >
+                        No Test
+                      </div>
+                      <div
+                        className="py-2 px-4 cursor-pointer hover:bg-gray-100"
+                        onClick={() =>
+                          handleSelect(
+                            setSelectedAssessmentTestsAccess,
+                            setShowDropdownAssessmentTests,
+                            " Standard Test"
+                          )
+                        }
+                      >
+                        Standard Test
+                      </div>
+                      <div
+                        className="py-2 px-4 cursor-pointer hover:bg-gray-100"
+                        onClick={() =>
+                          handleSelect(
+                            setSelectedAssessmentTestsAccess,
+                            setShowDropdownAssessmentTests,
+                            " Custom Tests"
+                          )
+                        }
+                      >
+                        Custom Tests
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Feedback Reporting */}
               <div className="flex items-center mb-5">
@@ -284,7 +285,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                       Basic
+                        Basic
                       </div>
                       <div
                         className="py-2 px-4 cursor-pointer hover:bg-gray-100"
@@ -345,7 +346,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                       No Access
+                        No Access
                       </div>
                       <div
                         className="py-2 px-4 cursor-pointer hover:bg-gray-100"
@@ -411,7 +412,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                       720p
+                        720p
                       </div>
                       <div
                         className="py-2 px-4 cursor-pointer hover:bg-gray-100"
@@ -551,7 +552,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                     Basic
+                        Basic
                       </div>
                       <div
                         className="py-2 px-4 cursor-pointer hover:bg-gray-100"
@@ -575,7 +576,7 @@ const PlanMasterAdd = ({ closeAddPage, selectedTab }) => {
                           )
                         }
                       >
-                       Advanced
+                        Advanced
                       </div>
                     </div>
                   )}

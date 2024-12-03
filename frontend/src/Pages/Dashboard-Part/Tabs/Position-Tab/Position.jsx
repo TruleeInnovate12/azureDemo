@@ -1,15 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "../../../../index.css";
+import React, { Suspense } from 'react';
 import "../styles/tabs.scss";
 import Tooltip from "@mui/material/Tooltip";
-// import PositionProfileDetails from "./PositionProfileDetails";
-import { useNavigate } from "react-router-dom";
-// import Sidebar from "../Position-Tab/Position-Form.jsx";
-// import Editposition from "./Editpositionform.jsx";
+// import { useNavigate } from "react-router-dom";
 import { fetchFilterData } from "../../../../utils/dataUtils.js";
 import { fetchMasterData } from '../../../../utils/fetchMasterData.js';
 import { usePermissions } from '../../../../PermissionsContext';
 import { useMemo } from 'react';
+import ErrorBoundary from '../../../../ErrorBoundary.jsx';
 
 import { ReactComponent as IoIosArrowBack } from '../../../../icons/IoIosArrowBack.svg';
 import { ReactComponent as IoIosArrowForward } from '../../../../icons/IoIosArrowForward.svg';
@@ -23,6 +22,10 @@ import { ReactComponent as MdKeyboardArrowUp } from '../../../../icons/MdKeyboar
 import { ReactComponent as MdKeyboardArrowDown } from '../../../../icons/MdKeyboardArrowDown.svg';
 import { ReactComponent as CgInfo } from '../../../../icons/CgInfo.svg';
 import { ReactComponent as LuFilterX } from '../../../../icons/LuFilterX.svg';
+
+// const PositionProfileDetails = React.lazy(() => import('./PositionProfileDetails'));
+// const Sidebar = React.lazy(() => import('../Position-Tab/Position-Form.jsx'));
+// const Editposition = React.lazy(() => import('./Editpositionform.jsx'));
 
 const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
   const [isTechDropdownOpen, setTechDropdownOpen] = useState(false);
@@ -208,6 +211,7 @@ const OffcanvasMenu = ({ isOpen, onFilterChange, closeOffcanvas }) => {
     </div>
   );
 };
+
 const Position = () => {
   const { sharingPermissionscontext, objectPermissionscontext } = usePermissions();
   const sharingPermissions = useMemo(() => sharingPermissionscontext.position || {}, [sharingPermissionscontext]);
@@ -243,7 +247,7 @@ const Position = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [selectedPosition, setSelectedPosition] = useState(null);
 
   const handlePositionClick = (position) => {
@@ -252,9 +256,9 @@ const Position = () => {
     }
     setActionViewMore(false);
   };
-  const handleCloseProfile = () => {
-    setSelectedPosition(null);
-  };
+  // const handleCloseProfile = () => {
+  //   setSelectedPosition(null);
+  // };
   const [skillsData, setSkillsData] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -279,9 +283,9 @@ const Position = () => {
     fetchSkillsData();
   }, [fetchSkillsData]);
 
-  const handlePositionAdded = () => {
-    fetchSkillsData();
-  };
+  // const handlePositionAdded = () => {
+  //   fetchSkillsData();
+  // };
 
   const [selectedFilters, setSelectedFilters] = useState({
     status: [],
@@ -382,11 +386,11 @@ const Position = () => {
 
   const [tableVisible] = useState(true);
 
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  // const [selectedCandidate, setSelectedCandidate] = useState(null);
 
-  const closeModal = () => {
-    setSelectedCandidate(null);
-  };
+  // const closeModal = () => {
+  //   setSelectedCandidate(null);
+  // };
 
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -400,17 +404,17 @@ const Position = () => {
     setActionViewMore((prev) => (prev === id ? null : id));
   };
 
-  const [selectedcandidate, setSelectedcandidate] = useState(null);
+  // const [selectedcandidate, setSelectedcandidate] = useState(null);
 
   const handleEditClick = (position) => {
-    setSelectedcandidate(position);
+    // setSelectedcandidate(position);
     setActionViewMore(false);
   };
 
-  const handleclose = () => {
-    setSelectedcandidate(null);
-    setActionViewMore(false);
-  };
+  // const handleclose = () => {
+  //   setSelectedcandidate(null);
+  //   setActionViewMore(false);
+  // };
   // Detect screen size and set view mode to "kanban" for sm
   useEffect(() => {
     const handleResize = () => {
@@ -436,475 +440,252 @@ const Position = () => {
   };
 
   const [showMainContent, setShowMainContent] = useState(true);
-  return (
-    <>
-      {showMainContent && !selectedPosition && (
-        <section>
-          <div className="fixed top-16 sm:top-20 md:top-24 left-0 right-0">
-            <div className="flex justify-between p-4">
-              <div>
-                <span className="text-lg font-semibold">Positions</span>
-              </div>
 
-              <div>
-                {notification && (
-                  <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300">
-                    {notification}
+  return (
+    <ErrorBoundary>
+      <div>
+        {showMainContent && !selectedPosition && (
+          <section>
+            <div className="fixed top-16 sm:top-20 md:top-24 left-0 right-0">
+              <div className="flex justify-between p-4">
+                <div>
+                  <span className="text-lg font-semibold">Positions</span>
+                </div>
+
+                <div>
+                  {notification && (
+                    <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300">
+                      {notification}
+                    </div>
+                  )}
+                </div>
+
+                {objectPermissions.Create && (
+                  <div onClick={toggleSidebar}>
+                    <span className="p-2 bg-custom-blue text-md sm:text-sm md:text-sm text-white font-semibold border shadow rounded">
+                      Add
+                    </span>
                   </div>
                 )}
               </div>
-
-              {objectPermissions.Create && (
-                <div onClick={toggleSidebar}>
-                  <span className="p-2 bg-custom-blue text-md sm:text-sm md:text-sm text-white font-semibold border shadow rounded">
-                    Add
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
-          <div className="fixed top-28 sm:top-32 md:top-36 left-0 right-0">
-            <div className="lg:flex xl:flex 2xl:flex items-center lg:justify-between xl:justify-between 2xl:justify-between md:float-end sm:float-end p-4 ">
-              <div className="flex items-center sm:hidden md:hidden">
-                <Tooltip title="List" enterDelay={300} leaveDelay={100} arrow>
-                  <span onClick={handleListViewClick}>
-                    <FaList
-                      className={`text-xl mr-4 ${viewMode === "list" ? "text-custom-blue" : ""
-                        }`}
-                    />
-                  </span>
-                </Tooltip>
-                <Tooltip title="Kanban" enterDelay={300} leaveDelay={100} arrow>
-                  <span onClick={handleKanbanViewClick}>
-                    <TbLayoutGridRemove
-                      className={`text-xl ${viewMode === "kanban" ? "text-custom-blue" : ""
-                        }`}
-                    />
-                  </span>
-                </Tooltip>
-              </div>
-              <div className="flex items-center">
-                <div className="relative">
-                  <div className="searchintabs border rounded-md relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center">
-                      <button type="submit" className="p-2">
-                        <IoMdSearch className="text-custom-blue" />
-                      </button>
+            <div className="fixed top-28 sm:top-32 md:top-36 left-0 right-0">
+              <div className="lg:flex xl:flex 2xl:flex items-center lg:justify-between xl:justify-between 2xl:justify-between md:float-end sm:float-end p-4 ">
+                <div className="flex items-center sm:hidden md:hidden">
+                  <Tooltip title="List" enterDelay={300} leaveDelay={100} arrow>
+                    <span onClick={handleListViewClick}>
+                      <FaList
+                        className={`text-xl mr-4 ${viewMode === "list" ? "text-custom-blue" : ""
+                          }`}
+                      />
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="Kanban" enterDelay={300} leaveDelay={100} arrow>
+                    <span onClick={handleKanbanViewClick}>
+                      <TbLayoutGridRemove
+                        className={`text-xl ${viewMode === "kanban" ? "text-custom-blue" : ""
+                          }`}
+                      />
+                    </span>
+                  </Tooltip>
+                </div>
+                <div className="flex items-center">
+                  <div className="relative">
+                    <div className="searchintabs border rounded-md relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center">
+                        <button type="submit" className="p-2">
+                          <IoMdSearch className="text-custom-blue" />
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Search by Title, Company Name."
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
+                        className="rounded-full border h-8"
+                      />
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Search by Title, Company Name."
-                      value={searchQuery}
-                      onChange={handleSearchInputChange}
-                      className="rounded-full border h-8"
-                    />
+                  </div>
+                  <div>
+                    <span className="p-2 text-xl sm:text-sm md:text-sm">
+                      {currentPage + 1}/{totalPages}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <Tooltip title="Previous" enterDelay={300} leaveDelay={100} arrow>
+                      <span
+                        className={`border p-2 mr-2 text-xl sm:text-md md:text-md  rounded-md ${currentPage === 0 ? " cursor-not-allowed" : ""
+                          } ${activeArrow === "prev" ? "text-blue-500" : ""}`}
+                        onClick={prevPage}
+                      >
+                        <IoIosArrowBack className="text-custom-blue" />
+                      </span>
+                    </Tooltip>
+
+                    <Tooltip title="Next" enterDelay={300} leaveDelay={100} arrow>
+                      <span
+                        className={`border p-2 text-xl sm:text-md md:text-md  rounded-md ${currentPage === totalPages - 1 ? " cursor-not-allowed" : ""
+                          } ${activeArrow === "next" ? "text-blue-500" : ""}`}
+                        onClick={nextPage}
+                      >
+                        <IoIosArrowForward className="text-custom-blue" />
+
+                      </span>
+                    </Tooltip>
+                  </div>
+                  <div className="ml-2 text-xl sm:text-md md:text-md border rounded-md p-2">
+                    <Tooltip title="Filter" enterDelay={300} leaveDelay={100} arrow>
+                      <span
+                        onClick={handleFilterIconClick}
+                        style={{
+                          opacity: skillsData.length === 0 ? 0.2 : 1,
+                          pointerEvents: skillsData.length === 0 ? "none" : "auto",
+                        }}
+                      >
+                        {isFilterActive ? (
+                          <LuFilterX className="text-custom-blue" />
+                        ) : (
+                          <FiFilter className="text-custom-blue" />
+                        )}
+                      </span>
+                    </Tooltip>
                   </div>
                 </div>
-                <div>
-                  <span className="p-2 text-xl sm:text-sm md:text-sm">
-                    {currentPage + 1}/{totalPages}
-                  </span>
-                </div>
-                <div className="flex">
-                  <Tooltip title="Previous" enterDelay={300} leaveDelay={100} arrow>
-                    <span
-                      className={`border p-2 mr-2 text-xl sm:text-md md:text-md  rounded-md ${currentPage === 0 ? " cursor-not-allowed" : ""
-                        } ${activeArrow === "prev" ? "text-blue-500" : ""}`}
-                      onClick={prevPage}
-                    >
-                      <IoIosArrowBack className="text-custom-blue" />
-                    </span>
-                  </Tooltip>
-
-                  <Tooltip title="Next" enterDelay={300} leaveDelay={100} arrow>
-                    <span
-                      className={`border p-2 text-xl sm:text-md md:text-md  rounded-md ${currentPage === totalPages - 1 ? " cursor-not-allowed" : ""
-                        } ${activeArrow === "next" ? "text-blue-500" : ""}`}
-                      onClick={nextPage}
-                    >
-                      <IoIosArrowForward className="text-custom-blue" />
-
-                    </span>
-                  </Tooltip>
-                </div>
-                <div className="ml-2 text-xl sm:text-md md:text-md border rounded-md p-2">
-                  <Tooltip title="Filter" enterDelay={300} leaveDelay={100} arrow>
-                    <span
-                      onClick={handleFilterIconClick}
-                      style={{
-                        opacity: skillsData.length === 0 ? 0.2 : 1,
-                        pointerEvents: skillsData.length === 0 ? "none" : "auto",
-                      }}
-                    >
-                      {isFilterActive ? (
-                        <LuFilterX className="text-custom-blue" />
-                      ) : (
-                        <FiFilter className="text-custom-blue" />
-                      )}
-                    </span>
-                  </Tooltip>
-                </div>
               </div>
             </div>
-          </div>
-          <div className="fixed left-0 right-0 mx-auto z-10 sm:top-44 md:top-52 lg:top-48 xl:top-48 2xl:top-48">
-            {tableVisible && (
-              <div>
-                {viewMode === "list" ? (
-                  <div className="sm:hidden md:hidden lg:flex xl:flex 2xl:flex">
-                    <div
-                      className="flex-grow"
-                      style={{ marginRight: isMenuOpen ? "290px" : "0" }}
-                    >
-                      <div className="relative h-[calc(100vh-200px)] flex flex-col">
-                        <div className="flex-grow overflow-y-auto pb-4">
+            <div className="fixed left-0 right-0 mx-auto z-10 sm:top-44 md:top-52 lg:top-48 xl:top-48 2xl:top-48">
+              {tableVisible && (
+                <div>
+                  {viewMode === "list" ? (
+                    <div className="sm:hidden md:hidden lg:flex xl:flex 2xl:flex">
+                      <div
+                        className="flex-grow"
+                        style={{ marginRight: isMenuOpen ? "290px" : "0" }}
+                      >
+                        <div className="relative h-[calc(100vh-200px)] flex flex-col">
+                          <div className="flex-grow overflow-y-auto pb-4">
 
-                          <table className="text-left w-full border-collapse border-gray-300 mb-14">
-                            <thead className="bg-custom-bg sticky top-0 z-10 text-xs">
-                              <tr>
-                                <th scope="col" className="py-3 px-6">
-                                  Title
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                  Company Name
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                  Job Description
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                  Experience
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                  Skills
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                  Rounds
-                                </th>
-                                <th scope="col" className="py-3 pl-6">
-                                  Action
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {loading ? (
+                            <table className="text-left w-full border-collapse border-gray-300 mb-14">
+                              <thead className="bg-custom-bg sticky top-0 z-10 text-xs">
                                 <tr>
-                                  <td colSpan="7" className="py-28 text-center">
-                                    <div className="wrapper12">
-                                      <div className="circle12"></div>
-                                      <div className="circle12"></div>
-                                      <div className="circle12"></div>
-                                      <div className="shadow12"></div>
-                                      <div className="shadow12"></div>
-                                      <div className="shadow12"></div>
-                                    </div>
-                                  </td>
+                                  <th scope="col" className="py-3 px-6">
+                                    Title
+                                  </th>
+                                  <th scope="col" className="py-3 px-6">
+                                    Company Name
+                                  </th>
+                                  <th scope="col" className="py-3 px-6">
+                                    Job Description
+                                  </th>
+                                  <th scope="col" className="py-3 px-6">
+                                    Experience
+                                  </th>
+                                  <th scope="col" className="py-3 px-6">
+                                    Skills
+                                  </th>
+                                  <th scope="col" className="py-3 px-6">
+                                    Rounds
+                                  </th>
+                                  <th scope="col" className="py-3 pl-6">
+                                    Action
+                                  </th>
                                 </tr>
-                              ) : skillsData.length === 0 ? (
-                                <tr>
-                                  <td colSpan="8" className="py-10 text-center">
-                                    <div className="flex flex-col items-center justify-center p-5">
-                                      <p className="text-9xl rotate-180 text-blue-500">
-                                        <CgInfo />
-                                      </p>
-                                      <p className="text-center text-lg font-normal">
-                                        You don't have position yet. Create new
-                                        position.
-                                      </p>
-                                      <p
-                                        onClick={toggleSidebar}
-                                        className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md"
-                                      >
-                                        Add position
-                                      </p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ) : currentFilteredRows.length === 0 ? (
-                                <tr>
-                                  <td colSpan="7" className="py-10 text-center">
-                                    <p className="text-lg font-normal">
-                                      No data found.
-                                    </p>
-                                  </td>
-                                </tr>
-                              ) : (
-                                currentFilteredRows.map((position) => (
-                                  <tr
-                                    key={position._id}
-                                    className="bg-white border-b cursor-pointer text-xs"
-                                  >
-                                    <td
-                                      onClick={() => handlePositionClick(position)}
-                                      className="py-2 px-6 text-custom-blue"
-                                    >
-                                      {position.title}
-                                    </td>
-                                    <td
-                                      className="py-2 px-6"
-                                      style={{ whiteSpace: "normal" }}
-                                    >
-                                      {position.companyname}
-                                    </td>
-                                    <td
-                                      className="py-2 px-6"
-                                      style={{
-                                        whiteSpace: "normal",
-                                        maxWidth: "200px",
-                                      }}
-                                      dangerouslySetInnerHTML={{
-                                        __html: addLineBreaks(
-                                          position.jobdescription
-                                        ),
-                                      }}
-                                    ></td>
-                                    <td
-                                      className="py-2 px-6"
-                                      style={{ whiteSpace: "normal" }}
-                                    >
-                                      {position.minexperience}-
-                                      {position.maxexperience} years
-                                    </td>
-                                    <td
-                                      className="py-2 px-6"
-                                      style={{ whiteSpace: "normal" }}
-                                    >
-                                      {position.skills.map((skillEntry, index) => (
-                                        <div key={index}>
-                                          {skillEntry.skill}
-                                          {index < position.skills.length - 1 &&
-                                            ", "}
-                                        </div>
-                                      ))}
-                                    </td>
-                                    <td
-                                      className="py-2 px-6"
-                                      style={{ whiteSpace: "normal" }}
-                                    >
-                                      <Tooltip
-                                        title={
-                                          position.rounds &&
-                                            position.rounds.length > 0
-                                            ? position.rounds.map(
-                                              (round, index) => (
-                                                <div key={index}>
-                                                  {round.round}
-                                                </div>
-                                              )
-                                            )
-                                            : "No rounds"
-                                        }
-                                        arrow
-                                      >
-                                        <span>
-                                          {position.rounds &&
-                                            position.rounds.length > 0
-                                            ? `${position.rounds.length} rounds`
-                                            : "No rounds"}
-                                        </span>
-                                      </Tooltip>
-                                    </td>
-                                    <td
-                                      className="py-2 pl-6"
-                                      style={{ whiteSpace: "normal" }}
-                                    >
-                                      <div>
-                                        <button
-                                          onClick={() => toggleAction(position._id)}
-                                        >
-                                          <FiMoreHorizontal className="text-3xl" />
-                                        </button>
-                                        {actionViewMore === position._id && (
-                                          <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
-                                            <div className="space-y-1">
-                                              {objectPermissions.View && (
-                                                <p
-                                                  className="hover:bg-gray-200 p-1 rounded pl-3"
-                                                  onClick={() =>
-                                                    handlePositionClick(position)
-                                                  }
-                                                >
-                                                  View
-                                                </p>
-                                              )}
-                                              {objectPermissions.Edit && (
-                                                <p
-                                                  className="hover:bg-gray-200 p-1 rounded pl-3"
-                                                  onClick={() =>
-                                                    handleEditClick(position)
-                                                  }
-                                                >
-                                                  Edit
-                                                </p>
-                                              )}{" "}
-                                            </div>
-                                          </div>
-                                        )}
+                              </thead>
+                              <tbody>
+                                {loading ? (
+                                  <tr>
+                                    <td colSpan="7" className="py-28 text-center">
+                                      <div className="wrapper12">
+                                        <div className="circle12"></div>
+                                        <div className="circle12"></div>
+                                        <div className="circle12"></div>
+                                        <div className="shadow12"></div>
+                                        <div className="shadow12"></div>
+                                        <div className="shadow12"></div>
                                       </div>
                                     </td>
                                   </tr>
-                                ))
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                    <OffcanvasMenu
-                      isOpen={isMenuOpen}
-                      closeOffcanvas={handleFilterIconClick}
-                      onFilterChange={handleFilterChange}
-
-                    />
-                  </div>
-                ) : (
-                  // kanban view
-
-                  <div className="flex">
-                    <div
-                      className="flex-grow"
-                      style={{ marginRight: isMenuOpen ? "290px" : "0" }}
-                    >
-                      <div className="flex-grow h-[calc(100vh-200px)] overflow-y-auto pb-10 right-0 sm:mt-10 md:mt-10">
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 px-4">
-
-                          {loading ? (
-                            <div className="py-10 text-center">
-                              <div className="wrapper12">
-                                <div className="circle12"></div>
-                                <div className="circle12"></div>
-                                <div className="circle12"></div>
-                                <div className="shadow12"></div>
-                                <div className="shadow12"></div>
-                                <div className="shadow12"></div>
-                              </div>
-                            </div>
-                          ) : skillsData.length === 0 ? (
-                            <div className="py-10 text-center">
-                              <div className="flex flex-col items-center justify-center p-5">
-                                <p className="text-9xl rotate-180 text-blue-500">
-                                  <CgInfo />
-                                </p>
-                                <p className="text-center text-lg font-normal">
-                                  You don't have position yet. Create new position.
-                                </p>
-                                <button
-                                  onClick={toggleSidebar}
-                                  className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md"
-                                >
-                                  Add Position
-                                </button>
-                              </div>
-                            </div>
-                          ) : currentFilteredRows.length === 0 ? (
-                            <div className="col-span-3 py-10 text-center">
-                              <p className="text-lg font-normal">
-                                No data found.
-                              </p>
-                            </div>
-                          ) : (
-                            currentFilteredRows.map((position) => (
-                              <div
-                                key={position._id}
-                                className="bg-white border border-custom-blue shadow-md cursor-pointer p-2 rounded"
-                              >
-
-                                <div className="relative">
-                                  <div className="float-right">
-                                    <button
-                                      onClick={() =>
-                                        toggleAction(position._id)
-                                      }
-                                    >
-                                      <MdMoreVert className="text-3xl mt-1" />
-                                    </button>
-                                    {actionViewMore === position._id && (
-                                      <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
-                                        <div className="space-y-1">
-                                          {objectPermissions.View && (
-                                            <p
-                                              className="hover:bg-gray-200 p-1 rounded pl-3"
-                                              onClick={() =>
-                                                handlePositionClick(position)
-                                              }
-                                            >
-                                              View
-                                            </p>
-                                          )}
-                                          {objectPermissions.Edit && (
-                                            <p
-                                              className="hover:bg-gray-200 p-1 rounded pl-3"
-                                              onClick={() =>
-                                                handleEditClick(position)
-                                              }
-                                            >
-                                              Edit
-                                            </p>
-                                          )}
-                                        </div>
+                                ) : skillsData.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="8" className="py-10 text-center">
+                                      <div className="flex flex-col items-center justify-center p-5">
+                                        <p className="text-9xl rotate-180 text-blue-500">
+                                          <CgInfo />
+                                        </p>
+                                        <p className="text-center text-lg font-normal">
+                                          You don't have position yet. Create new
+                                          position.
+                                        </p>
+                                        <p
+                                          onClick={toggleSidebar}
+                                          className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md"
+                                        >
+                                          Add position
+                                        </p>
                                       </div>
-                                    )}
-                                  </div>
-                                </div>
-
-
-                                <div className="flex justify-between">
-                                  <div className="flex">
-                                    <div className="w-32 ml-2">
-                                      <p
-                                        className="text-custom-blue text-lg w-80"
-                                        onClick={() =>
-                                          handlePositionClick(position)
-                                        }
+                                    </td>
+                                  </tr>
+                                ) : currentFilteredRows.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="7" className="py-10 text-center">
+                                      <p className="text-lg font-normal">
+                                        No data found.
+                                      </p>
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  currentFilteredRows.map((position) => (
+                                    <tr
+                                      key={position._id}
+                                      className="bg-white border-b cursor-pointer text-xs"
+                                    >
+                                      <td
+                                        onClick={() => handlePositionClick(position)}
+                                        className="py-2 px-6 text-custom-blue"
                                       >
                                         {position.title}
-                                      </p>
-                                      <p className="text-gray-700">
-                                        <span className="text-slate-400">
-                                          Company
-                                        </span>
-                                      </p>
-                                      <p className="text-gray-700">
-                                        <span className="text-slate-400">
-                                          Experience
-                                        </span>
-                                      </p>
-                                      <p className="text-gray-700">
-                                        <span className="text-slate-400">
-                                          Skills
-                                        </span>
-                                      </p>
-                                      <p className="text-gray-700">
-                                        <span className="text-slate-400">
-                                          Rounds
-                                        </span>
-                                      </p>
-                                      <p className="text-gray-700">
-                                        <span className="text-slate-400">
-                                          Job Description
-                                        </span>
-                                      </p>
-                                    </div>
-                                    <div className="mt-7">
-                                      <p className="text-gray-700">
+                                      </td>
+                                      <td
+                                        className="py-2 px-6"
+                                        style={{ whiteSpace: "normal" }}
+                                      >
                                         {position.companyname}
-                                      </p>
-                                      <p className="text-gray-700">
+                                      </td>
+                                      <td
+                                        className="py-2 px-6"
+                                        style={{
+                                          whiteSpace: "normal",
+                                          maxWidth: "200px",
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                          __html: addLineBreaks(
+                                            position.jobdescription
+                                          ),
+                                        }}
+                                      ></td>
+                                      <td
+                                        className="py-2 px-6"
+                                        style={{ whiteSpace: "normal" }}
+                                      >
                                         {position.minexperience}-
                                         {position.maxexperience} years
-                                      </p>
-                                      <p className="text-gray-700">
-                                        {position.skills.map(
-                                          (skillEntry, index) => (
-                                            <div key={index}>
-                                              {skillEntry.skill}
-                                              {index <
-                                                position.skills.length - 1 &&
-                                                ", "}
-                                            </div>
-                                          )
-                                        )}
-                                      </p>
-                                      <p className="text-gray-7000">
+                                      </td>
+                                      <td
+                                        className="py-2 px-6"
+                                        style={{ whiteSpace: "normal" }}
+                                      >
+                                        {position.skills.map((skillEntry, index) => (
+                                          <div key={index}>
+                                            {skillEntry.skill}
+                                            {index < position.skills.length - 1 &&
+                                              ", "}
+                                          </div>
+                                        ))}
+                                      </td>
+                                      <td
+                                        className="py-2 px-6"
+                                        style={{ whiteSpace: "normal" }}
+                                      >
                                         <Tooltip
                                           title={
                                             position.rounds &&
@@ -927,61 +708,293 @@ const Position = () => {
                                               : "No rounds"}
                                           </span>
                                         </Tooltip>
-                                      </p>
-                                      <p className="text-gray-700">
-                                        {position.jobdescription}
-                                      </p>
+                                      </td>
+                                      <td
+                                        className="py-2 pl-6"
+                                        style={{ whiteSpace: "normal" }}
+                                      >
+                                        <div>
+                                          <button
+                                            onClick={() => toggleAction(position._id)}
+                                          >
+                                            <FiMoreHorizontal className="text-3xl" />
+                                          </button>
+                                          {actionViewMore === position._id && (
+                                            <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
+                                              <div className="space-y-1">
+                                                {objectPermissions.View && (
+                                                  <p
+                                                    className="hover:bg-gray-200 p-1 rounded pl-3"
+                                                    onClick={() =>
+                                                      handlePositionClick(position)
+                                                    }
+                                                  >
+                                                    View
+                                                  </p>
+                                                )}
+                                                {objectPermissions.Edit && (
+                                                  <p
+                                                    className="hover:bg-gray-200 p-1 rounded pl-3"
+                                                    onClick={() =>
+                                                      handleEditClick(position)
+                                                    }
+                                                  >
+                                                    Edit
+                                                  </p>
+                                                )}{" "}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <OffcanvasMenu
+                        isOpen={isMenuOpen}
+                        closeOffcanvas={handleFilterIconClick}
+                        onFilterChange={handleFilterChange}
+
+                      />
+                    </div>
+                  ) : (
+                    // kanban view
+
+                    <div className="flex">
+                      <div
+                        className="flex-grow"
+                        style={{ marginRight: isMenuOpen ? "290px" : "0" }}
+                      >
+                        <div className="flex-grow h-[calc(100vh-200px)] overflow-y-auto pb-10 right-0 sm:mt-10 md:mt-10">
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 px-4">
+
+                            {loading ? (
+                              <div className="py-10 text-center">
+                                <div className="wrapper12">
+                                  <div className="circle12"></div>
+                                  <div className="circle12"></div>
+                                  <div className="circle12"></div>
+                                  <div className="shadow12"></div>
+                                  <div className="shadow12"></div>
+                                  <div className="shadow12"></div>
+                                </div>
+                              </div>
+                            ) : skillsData.length === 0 ? (
+                              <div className="py-10 text-center">
+                                <div className="flex flex-col items-center justify-center p-5">
+                                  <p className="text-9xl rotate-180 text-blue-500">
+                                    <CgInfo />
+                                  </p>
+                                  <p className="text-center text-lg font-normal">
+                                    You don't have position yet. Create new position.
+                                  </p>
+                                  <button
+                                    onClick={toggleSidebar}
+                                    className="mt-3 cursor-pointer text-white bg-blue-400 px-4 py-1 rounded-md"
+                                  >
+                                    Add Position
+                                  </button>
+                                </div>
+                              </div>
+                            ) : currentFilteredRows.length === 0 ? (
+                              <div className="col-span-3 py-10 text-center">
+                                <p className="text-lg font-normal">
+                                  No data found.
+                                </p>
+                              </div>
+                            ) : (
+                              currentFilteredRows.map((position) => (
+                                <div
+                                  key={position._id}
+                                  className="bg-white border border-custom-blue shadow-md cursor-pointer p-2 rounded"
+                                >
+
+                                  <div className="relative">
+                                    <div className="float-right">
+                                      <button
+                                        onClick={() =>
+                                          toggleAction(position._id)
+                                        }
+                                      >
+                                        <MdMoreVert className="text-3xl mt-1" />
+                                      </button>
+                                      {actionViewMore === position._id && (
+                                        <div className="absolute z-10 w-36 rounded-md shadow-lg bg-white ring-1 p-4 ring-black ring-opacity-5 right-2 popup">
+                                          <div className="space-y-1">
+                                            {objectPermissions.View && (
+                                              <p
+                                                className="hover:bg-gray-200 p-1 rounded pl-3"
+                                                onClick={() =>
+                                                  handlePositionClick(position)
+                                                }
+                                              >
+                                                View
+                                              </p>
+                                            )}
+                                            {objectPermissions.Edit && (
+                                              <p
+                                                className="hover:bg-gray-200 p-1 rounded pl-3"
+                                                onClick={() =>
+                                                  handleEditClick(position)
+                                                }
+                                              >
+                                                Edit
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
 
-                                </div>
-                              </div>
-                            ))
-                          )}
 
+                                  <div className="flex justify-between">
+                                    <div className="flex">
+                                      <div className="w-32 ml-2">
+                                        <p
+                                          className="text-custom-blue text-lg w-80"
+                                          onClick={() =>
+                                            handlePositionClick(position)
+                                          }
+                                        >
+                                          {position.title}
+                                        </p>
+                                        <p className="text-gray-700">
+                                          <span className="text-slate-400">
+                                            Company
+                                          </span>
+                                        </p>
+                                        <p className="text-gray-700">
+                                          <span className="text-slate-400">
+                                            Experience
+                                          </span>
+                                        </p>
+                                        <p className="text-gray-700">
+                                          <span className="text-slate-400">
+                                            Skills
+                                          </span>
+                                        </p>
+                                        <p className="text-gray-700">
+                                          <span className="text-slate-400">
+                                            Rounds
+                                          </span>
+                                        </p>
+                                        <p className="text-gray-700">
+                                          <span className="text-slate-400">
+                                            Job Description
+                                          </span>
+                                        </p>
+                                      </div>
+                                      <div className="mt-7">
+                                        <p className="text-gray-700">
+                                          {position.companyname}
+                                        </p>
+                                        <p className="text-gray-700">
+                                          {position.minexperience}-
+                                          {position.maxexperience} years
+                                        </p>
+                                        <p className="text-gray-700">
+                                          {position.skills.map(
+                                            (skillEntry, index) => (
+                                              <div key={index}>
+                                                {skillEntry.skill}
+                                                {index <
+                                                  position.skills.length - 1 &&
+                                                  ", "}
+                                              </div>
+                                            )
+                                          )}
+                                        </p>
+                                        <p className="text-gray-7000">
+                                          <Tooltip
+                                            title={
+                                              position.rounds &&
+                                                position.rounds.length > 0
+                                                ? position.rounds.map(
+                                                  (round, index) => (
+                                                    <div key={index}>
+                                                      {round.round}
+                                                    </div>
+                                                  )
+                                                )
+                                                : "No rounds"
+                                            }
+                                            arrow
+                                          >
+                                            <span>
+                                              {position.rounds &&
+                                                position.rounds.length > 0
+                                                ? `${position.rounds.length} rounds`
+                                                : "No rounds"}
+                                            </span>
+                                          </Tooltip>
+                                        </p>
+                                        <p className="text-gray-700">
+                                          {position.jobdescription}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              ))
+                            )}
+
+                          </div>
                         </div>
                       </div>
+                      <OffcanvasMenu
+                        isOpen={isMenuOpen}
+                        closeOffcanvas={handleFilterIconClick}
+                        onFilterChange={handleFilterChange}
+                      />
                     </div>
-                    <OffcanvasMenu
-                      isOpen={isMenuOpen}
-                      closeOffcanvas={handleFilterIconClick}
-                      onFilterChange={handleFilterChange}
-                    />
-                  </div>
 
-                )}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-      {/* {selectedPosition && (
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+        {/* {selectedPosition && (
+        <Suspense fallback={<div>Loading...</div>}>
         <PositionProfileDetails
           position={selectedPosition}
           onCloseprofile={handleCloseProfile}
         />
-      )} */}
-      {/* {selectedcandidate && (
+        </Suspense>
+        )} */}
+        {/* {selectedcandidate && (
+        <Suspense fallback={<div>Loading...</div>}>
         <Editposition
           onClose={handleclose}
           candidate1={selectedcandidate}
           rounds={selectedcandidate.rounds}
         />
-      )} */}
-      {sidebarOpen && (
-        <>
-          <div className={"fixed inset-0 bg-black bg-opacity-15 z-50"}>
-            <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
-              {/* <Sidebar
-                onClose={closeSidebar}
-                onOutsideClick={handleOutsideClick}
-                onPositionAdded={handlePositionAdded}
-              /> */}
+        </Suspense>
+        )} */}
+        {sidebarOpen && (
+          <>
+            <div className={"fixed inset-0 bg-black bg-opacity-15 z-50"}>
+              <div className="fixed inset-y-0 right-0 z-50 sm:w-full md:w-3/4 lg:w-1/2 xl:w-1/2 2xl:w-1/2 bg-white shadow-lg transition-transform duration-5000 transform">
+                <Suspense fallback={<div>Loading...</div>}>
+                  {/* <Sidebar
+                    onClose={closeSidebar}
+                    onOutsideClick={handleOutsideClick}
+                    onPositionAdded={handlePositionAdded}
+                  /> */}
+                </Suspense>
+              </div>
             </div>
-          </div>
-        </>
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };
 

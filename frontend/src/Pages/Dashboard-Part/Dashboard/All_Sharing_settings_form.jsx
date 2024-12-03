@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { IoArrowBack } from "react-icons/io5";
- 
 
+import { ReactComponent as IoArrowBack } from '../../../icons/IoArrowBack.svg';
+ 
 const Sharing_settings_form = ({ onClose }) => {
     const [errors, setErrors] = useState("");
     const [formData, setFormData] = useState({

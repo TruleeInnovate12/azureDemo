@@ -1,14 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const Login_1 = () => {
 	const navigate = useNavigate()
 	
+	useEffect(() => {
+		// Log environment variables and API URL
+		console.log('Environment:', process.env.NODE_ENV);
+		console.log('API URL:', process.env.REACT_APP_API_URL);
+		console.log('All env variables:', process.env);
+	}, []);
+
 	const Signup = () => {
 		navigate("/profile1", { state: { from: "signup" } });
 	};
 
 	const Login = () => {
+		
 		navigate("/profile1", { state: { from: "login" } });
 	};
 	
