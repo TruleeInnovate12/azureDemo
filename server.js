@@ -13,31 +13,84 @@ const port = process.env.PORT || 4041;
 const mongoUri = process.env.MONGO_URI;
 
 mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  retryWrites: false, // Important for Azure Cosmos DB
-  maxPoolSize: 10, // Limit connection pool size
-  serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    retryWrites: false, // Important for Azure Cosmos DB
+    maxPoolSize: 10, // Limit connection pool size
+    serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1); // Exit if cannot connect to database
-});
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        process.exit(1); // Exit if cannot connect to database
+    });
 
 // Add error handlers for MongoDB connection
 mongoose.connection.on('error', err => {
-  console.error('MongoDB connection error:', err);
+    console.error('MongoDB connection error:', err);
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
+    console.log('MongoDB disconnected');
 });
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+// MongoDB connection setup with better error handling and retry logic
+const connectDB = async () => {
+    const maxRetries = 5;
+    let retries = 0;
+
+    while (retries < maxRetries) {
+        try {
+            await mongoose.connect(mongoUri, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                retryWrites: false, // Important for Azure Cosmos DB
+                maxPoolSize: 10, // Limit connection pool size
+                serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+                // Add reconnect options
+                autoReconnect: true,
+                reconnectTries: Number.MAX_VALUE,
+                reconnectInterval: 1000
+            });
+
+            console.log('Connected to MongoDB');
+            break; // Exit loop if connection successful
+        } catch (err) {
+            retries++;
+            console.error(`MongoDB connection attempt ${retries} failed:`, err);
+
+            if (retries === maxRetries) {
+                console.error('Max retries reached. Exiting...');
+                process.exit(1);
+            }
+
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+};
+
+// Enhanced error handlers
+mongoose.connection.on('error', err => {
+    console.error('MongoDB connection error:', err);
+    // Attempt to reconnect
+    connectDB();
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected. Attempting to reconnect...');
+    connectDB();
+});
+
+mongoose.connection.on('connected', () => {
+    console.log('MongoDB connected successfully');
+});
+
+// Modified test endpoint with more detailed diagnostics
 app.get('/test-db', async (req, res) => {
     try {
         const dbState = mongoose.connection.readyState;
@@ -47,20 +100,38 @@ app.get('/test-db', async (req, res) => {
             2: "connecting",
             3: "disconnecting"
         };
-        
-        res.json({
+
+        // Add more diagnostic information
+        const diagnostics = {
             status: 'success',
             connection: states[dbState],
             database: mongoose.connection.name,
-            host: mongoose.connection.host
-        });
+            host: mongoose.connection.host,
+            port: mongoose.connection.port,
+            models: Object.keys(mongoose.models),
+            connectionOptions: mongoose.connection.config || {},
+            timestamp: new Date().toISOString()
+        };
+
+        if (dbState !== 1) {
+            diagnostics.warning = 'Database not fully connected';
+            diagnostics.suggestion = 'Check connection string and network connectivity';
+        }
+
+        res.json(diagnostics);
     } catch (error) {
+        console.error('Database test error:', error);
         res.status(500).json({
             status: 'error',
-            message: error.message
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+            timestamp: new Date().toISOString()
         });
     }
 });
+
+// Initialize database connection
+connectDB();
 // app.get('/api/message', (req, res) => {
 //     res.json({ message: 'Hello from the backend !' });
 // });
@@ -4003,6 +4074,77 @@ app.get('/test-db-connection', async (req, res) => {
         });
     }
 });
+
+// Add this near the top after express initialization
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error:', err);
+    res.status(500).json({
+        status: 'error',
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
+// Update the welcome endpoint with better error handling
+app.get('/api/welcome', async (req, res) => {
+    try {
+        // First check DB connection
+        const dbConnected = mongoose.connection.readyState === 1;
+
+        const response = {
+            status: 'success',
+            message: 'Hello World! 🌍',
+            apiInfo: {
+                name: 'Interview App API',
+                status: '✅ Running',
+                timestamp: new Date().toISOString(),
+                environment: process.env.NODE_ENV || 'development'
+            },
+            dbStatus: dbConnected ? 'Connected' : 'Disconnected',
+            dbReadyState: mongoose.connection.readyState
+        };
+
+        res.json(response);
+    } catch (error) {
+        console.error('Welcome endpoint error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Server error',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+
+// Add a simple root endpoint as well
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Hello World! 👋',
+        api: 'Welcome to Interview App API',
+        docs: '/api/welcome'
+    });
+});
+
+// Add this near your other routes
+app.get('/health', (req, res) => {
+    try {
+        res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            dbConnection: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+            environment: process.env.NODE_ENV,
+            memoryUsage: process.memoryUsage(),
+            uptime: process.uptime()
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'unhealthy',
+            error: error.message
+        });
+    }
+});
+
+
 
 // Add this near the top after express initialization
 app.use((err, req, res, next) => {
