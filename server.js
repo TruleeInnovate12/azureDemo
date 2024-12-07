@@ -239,29 +239,27 @@ app.use(bodyParser.json());
 // const cors = require("cors");
 
 const allowedOrigins = ["https://www.app.upinterview.io"];
+
+// Remove the previous CORS middleware
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
   credentials: true,
-  maxAge: 86400 // 24 hours
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Length', 'X-Requested-With'],
+  maxAge: 86400
 }));
 
-// Add preflight OPTIONS handler
+// Handle preflight requests
 app.options('*', cors());
 
-// Add error handler for CORS errors
+// Add error handler for CORS errors (remove the extra parenthesis that was causing the syntax error)
 app.use((err, req, res, next) => {
   if (err.message.includes('CORS')) {
     res.status(403).json({
@@ -271,7 +269,7 @@ app.use((err, req, res, next) => {
   } else {
     next(err);
   }
-}));
+});
 
 // app.use(cors({
 //   origin: (origin, callback) => {
