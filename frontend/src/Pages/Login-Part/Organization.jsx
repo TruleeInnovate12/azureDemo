@@ -192,111 +192,8 @@ const Organization = memo(() => {
         sameSite: 'strict'
       });
 
-      // const accessBody = safeObjectsData.map(tab => ({
-      //   ObjName: tab,
-      //   Access: 'Public',
-      //   GrantAccess: false
-      // }));
-
-      // await axios.post(`${backendUrl}/api/sharing-settings`, {
-      //   Name: 'sharingSettingDefaultName',
-      //   organizationId: organization._id,
-      //   accessBody
-      // });
-      // const profileNames = ["Admin", "CEO", "HR Manager", "HR Lead", "HR Recruiter"];
-      // let adminProfileId = null;
-
-      // for (const profileName of profileNames) {
-      //   const profileTabs = safeTabsData.map(tab => ({
-      //     name: tab,
-      //     status: profileName === "Admin" ? 'Visible' : 'Hidden'
-      //   }));
-
-      //   const profileObjects = safeObjectsData.map(object => ({
-      //     name: object,
-      //     permissions: {
-      //       View: true,
-      //       Create: true,
-      //       Edit: true,
-      //       Delete: profileName === "Admin"
-      //     }
-      //   }));
-
-      //   const profileResponse = await axios.post(`${backendUrl}/api/profiles`,
-
-      //     {
-      //       label: profileName,
-      //       Name: profileName,
-      //       Description: `Default profile description for ${profileName}`,
-      //       Tabs: profileTabs,
-      //       Objects: profileObjects,
-      //       organizationId: organization._id
-      //     })
-
-      //   if (profileName === "Admin" && profileResponse?.data?._id) {
-      //     adminProfileId = profileResponse.data._id;
-      //   }
-      // }
-
-      // if (!adminProfileId) {
-      //   throw new Error("Failed to create admin profile");
-      // }
-
-      // const roles = [
-      //   { label: "Admin", name: "Admin" },
-      //   { label: "CEO", name: "CEO" },
-      //   { label: "HR Manager", name: "HR_Manager" },
-      //   { label: "HR Lead", name: "HR_Lead" },
-      //   { label: "Recruiter", name: "Recruiter" },
-      // ];
-
-      // let adminRoleId = "";
-      // let ceoRoleId = "";
-      // let hrManagerRoleId = "";
-      // let hrLeadRoleId = "";
-
-      // for (let i = 0; i < roles.length; i++) {
-      //   let reportsToRoleId = null;
-
-      //   if (roles[i].name === "CEO") {
-      //     reportsToRoleId = adminRoleId;
-      //   } else if (roles[i].name === "HR_Manager") {
-      //     reportsToRoleId = ceoRoleId;
-      //   } else if (roles[i].name === "HR_Lead") {
-      //     reportsToRoleId = hrManagerRoleId;
-      //   } else if (roles[i].name === "Recruiter") {
-      //     reportsToRoleId = hrLeadRoleId;
-      //   }
-
-      //   const roleData = {
-      //     label: roles[i].label,
-      //     roleName: roles[i].name,
-      //     description: `Default role description for ${roles[i].name}`,
-      //     organizationId: organization._id,
-      //   };
-
-      //   if (reportsToRoleId) {
-      //     roleData.reportsToRoleId = reportsToRoleId;
-      //   }
-
-      //   const roleResponse = await axios.post(`${backendUrl}/rolesdata`, roleData);
-      //   if (roles[i].name === "Admin") {
-      //     adminRoleId = roleResponse.data._id;
-      //   } else if (roles[i].name === "CEO") {
-      //     ceoRoleId = roleResponse.data._id;
-      //   } else if (roles[i].name === "HR_Manager") {
-      //     hrManagerRoleId = roleResponse.data._id;
-      //   } else if (roles[i].name === "HR_Lead") {
-      //     hrLeadRoleId = roleResponse.data._id;
-      //   }
-      // }
-
-      //   await axios.put(`${backendUrl}/users/${user._id}`, {
-      //     RoleId: adminRoleId,
-      //     ProfileId: adminProfileId
-      //   });
-
       navigate('/price');
+
     } catch (error) {
       console.error('Error saving organization:', error);
       
@@ -304,11 +201,15 @@ const Organization = memo(() => {
       
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
+        console.error('Server error:', error.response.data);
       } else if (error.request) {
         errorMessage = 'Unable to reach the server. Please check your connection.';
+        console.error('Network error:', error.request);
       } else {
         errorMessage = error.message;
+        console.error('Error:', error.message);
       }
+      
       setErrorMessage(errorMessage);
     }
   };
