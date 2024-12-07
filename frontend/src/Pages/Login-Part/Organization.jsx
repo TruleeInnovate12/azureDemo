@@ -159,14 +159,16 @@ const Organization = memo(() => {
         password: selectedPassword
       };
 
-      const response = await axios.post(`${backendUrl}/organization`, formData, {
+      const config = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         withCredentials: true,
         timeout: 10000
-      });
+      };
+
+      const response = await axios.post(`${backendUrl}/organization`, formData, config);
 
       if (!response?.data?.user?._id || !response?.data?.organization?._id) {
         throw new Error("Invalid response from server");
@@ -294,6 +296,8 @@ const Organization = memo(() => {
         errorMessage = error.response.data?.message || errorMessage;
       } else if (error.request) {
         errorMessage = 'Unable to reach the server. Please check your connection.';
+      } else {
+        errorMessage = error.message;
       }
       setErrorMessage(errorMessage);
     }
