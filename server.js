@@ -243,18 +243,35 @@ const allowedOrigins = ["https://www.app.upinterview.io"];
 // Remove the previous CORS middleware
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Length', 'X-Requested-With'],
   maxAge: 86400
 }));
+
+// Add preflight handler
+app.options('*', cors());
+
+// Add this before your routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://www.app.upinterview.io');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  next();
+});
 
 // Handle preflight requests
 app.options('*', cors());
@@ -3930,7 +3947,6 @@ app.delete('/assessment/:assessmentId/section/:sectionId/question/:questionId', 
         res.status(400).json({ error: error.message });
     }
 });
-
 
 
 
