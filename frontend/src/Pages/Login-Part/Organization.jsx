@@ -31,6 +31,17 @@ const Organization = memo(() => {
   const [tabsData, setTabsData] = useState([]);
   const navigate = useNavigate();
 
+  const baseURL = 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net';
+
+  const tryApiCall = async (apiCall) => {
+    try {
+      return await apiCall(baseURL);
+    } catch (error) {
+      // If Azure URL fails, try localhost
+      return await apiCall('http://localhost:3000');
+    }
+  };
+
   useEffect(() => {
     const fetchObjectsData = async () => {
       try {
@@ -134,7 +145,10 @@ const Organization = memo(() => {
         password: selectedPassword
       };
 
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/organization`, formData);
+      // const response = await axios.post(`${process.env.REACT_APP_API_URL}/organization`, formData);
+      const response = await tryApiCall(async (url) => 
+        await axios.post(`${url}/organization`, formData)
+      );
 
       if (!response?.data?.user?._id || !response?.data?.organization?._id) {
         throw new Error("Invalid response from server");
@@ -154,11 +168,18 @@ const Organization = memo(() => {
         GrantAccess: false
       }));
 
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/sharing-settings`, {
-        Name: 'sharingSettingDefaultName',
-        organizationId: organization._id,
-        accessBody
-      });
+      // await axios.post(`${process.env.REACT_APP_API_URL}/api/sharing-settings`, {
+      //   Name: 'sharingSettingDefaultName',
+      //   organizationId: organization._id,
+      //   accessBody
+      // });
+      await tryApiCall(async (url) => 
+        await axios.post(`${url}/api/sharing-settings`, {
+          Name: 'sharingSettingDefaultName',
+          organizationId: organization._id,
+          accessBody
+        })
+      );
 
       const profileNames = ["Admin", "CEO", "HR Manager", "HR Lead", "HR Recruiter"];
       let adminProfileId = null;
@@ -179,14 +200,18 @@ const Organization = memo(() => {
           }
         }));
 
-        const profileResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/profiles`, {
-          label: profileName,
-          Name: profileName,
-          Description: `Default profile description for ${profileName}`,
-          Tabs: profileTabs,
-          Objects: profileObjects,
-          organizationId: organization._id
-        });
+        // const profileResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/profiles`, 
+        const profileResponse = await tryApiCall(async (url) => 
+          await axios.post(`${url}/api/profiles`, 
+          {
+            label: profileName,
+            Name: profileName,
+            Description: `Default profile description for ${profileName}`,
+            Tabs: profileTabs,
+            Objects: profileObjects,
+            organizationId: organization._id
+          })
+        );
 
         if (profileName === "Admin" && profileResponse?.data?._id) {
           adminProfileId = profileResponse.data._id;
@@ -234,7 +259,10 @@ const Organization = memo(() => {
           roleData.reportsToRoleId = reportsToRoleId;
         }
 
-        const roleResponse = await axios.post(`${process.env.REACT_APP_API_URL}/rolesdata`, roleData);
+        // const roleResponse = await axios.post(`${process.env.REACT_APP_API_URL}/rolesdata`, roleData);
+        const roleResponse = await tryApiCall(async (url) => 
+          await axios.post(`${url}/rolesdata`, roleData)
+        );
 
         if (roles[i].name === "Admin") {
           adminRoleId = roleResponse.data._id;
@@ -247,10 +275,16 @@ const Organization = memo(() => {
         }
       }
 
-      await axios.put(`${process.env.REACT_APP_API_URL}/users/${user._id}`, {
-        RoleId: adminRoleId,
-        ProfileId: adminProfileId
-      });
+      // await axios.put(`${process.env.REACT_APP_API_URL}/users/${user._id}`, {
+      //   RoleId: adminRoleId,
+      //   ProfileId: adminProfileId
+      // });
+      await tryApiCall(async (url) => 
+        await axios.put(`${url}/users/${user._id}`, {
+          RoleId: adminRoleId,
+          ProfileId: adminProfileId
+        })
+      );
 
       navigate('/price');
     } catch (error) {
