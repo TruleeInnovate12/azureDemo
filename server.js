@@ -10,43 +10,83 @@ app.use(cors());
 require('dotenv').config();
 
 const port = process.env.PORT || 4041;
-const mongoUri = process.env.MONGO_URI + '&retryWrites=false';
+const mongoUri = process.env.MONGO_URI;
 
-// Connect to MongoDB
-mongoose.connect(mongoUri)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Could not connect to MongoDB', err));
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  retryWrites: false, // Important for Azure Cosmos DB
+  maxPoolSize: 10, // Limit connection pool size
+  serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  process.exit(1); // Exit if cannot connect to database
+});
+
+// Add error handlers for MongoDB connection
+mongoose.connection.on('error', err => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
 
 app.get('/', (req, res) => {
-    res.send('Hello World! this is updated on 10:40 pm');
+    res.send('Hello World!');
 });
 
-app.get('/api/message', (req, res) => {
-    res.json({ message: 'Hello from the backend !' });
-});
-
-app.get('/api/db-status', (req, res) => {
-    const status = mongoose.connection.readyState === 1 ? 'Connected to MongoDB' : 'Not connected to MongoDB';
-    res.json({ status });
-});
-
-app.post('/api/save-user', async (req, res) => {
-    const { name } = req.body;
+app.get('/test-db', async (req, res) => {
     try {
-        const user = new User({ name });
-        await user.save();
-        res.json({ message: 'User saved successfully' });
-    } catch (err) {
-        if (err.code === 11000) {
-            // Duplicate key error
-            console.error('Duplicate key error:', err);
-            res.status(400).json({ error: 'Duplicate entry' });
-        } else {
-            console.error('Error saving user:', err);
-            res.status(500).json({ error: 'Error saving user' });
-        }
+        const dbState = mongoose.connection.readyState;
+        const states = {
+            0: "disconnected",
+            1: "connected",
+            2: "connecting",
+            3: "disconnecting"
+        };
+        
+        res.json({
+            status: 'success',
+            connection: states[dbState],
+            database: mongoose.connection.name,
+            host: mongoose.connection.host
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
     }
 });
+// app.get('/api/message', (req, res) => {
+//     res.json({ message: 'Hello from the backend !' });
+// });
+
+// app.get('/api/db-status', (req, res) => {
+//     const status = mongoose.connection.readyState === 1 ? 'Connected to MongoDB' : 'Not connected to MongoDB';
+//     res.json({ status });
+// });
+
+// app.post('/api/save-user', async (req, res) => {
+//     const { name } = req.body;
+//     try {
+//         const user = new User({ name });
+//         await user.save();
+//         res.json({ message: 'User saved successfully' });
+//     } catch (err) {
+//         if (err.code === 11000) {
+//             // Duplicate key error
+//             console.error('Duplicate key error:', err);
+//             res.status(400).json({ error: 'Duplicate entry' });
+//         } else {
+//             console.error('Error saving user:', err);
+//             res.status(500).json({ error: 'Error saving user' });
+//         }
+//     }
+// });
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
