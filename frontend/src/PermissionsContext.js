@@ -15,7 +15,7 @@ export const PermissionsProvider = ({ children }) => {
   const [sharingPermissionscontext, setSharingPermissions] = useState({});
 
   const backendUrl = process.env.NODE_ENV === 'production'
-    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net/'
+    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net'
     : 'http://localhost:4041';
 
 
