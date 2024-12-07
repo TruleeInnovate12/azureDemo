@@ -161,9 +161,11 @@ const Organization = memo(() => {
 
       const response = await axios.post(`${backendUrl}/organization`, formData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        withCredentials: true
+        withCredentials: true,
+        timeout: 10000
       });
 
       if (!response?.data?.user?._id || !response?.data?.organization?._id) {
@@ -282,11 +284,17 @@ const Organization = memo(() => {
       //     ProfileId: adminProfileId
       //   });
 
-
       navigate('/price');
     } catch (error) {
       console.error('Error saving organization:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'An error occurred while saving the organization';
+      
+      let errorMessage = 'An error occurred while saving the organization';
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        errorMessage = 'Unable to reach the server. Please check your connection.';
+      }
       setErrorMessage(errorMessage);
     }
   };
