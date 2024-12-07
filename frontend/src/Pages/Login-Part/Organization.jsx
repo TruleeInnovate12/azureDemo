@@ -159,16 +159,19 @@ const Organization = memo(() => {
         password: selectedPassword
       };
 
-      const config = {
+      // Create axios instance with default config
+      const axiosInstance = axios.create({
+        baseURL: backendUrl,
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Origin': window.location.origin
         },
         withCredentials: true,
-        timeout: 10000
-      };
+        timeout: 15000
+      });
 
-      const response = await axios.post(`${backendUrl}/organization`, formData, config);
+      const response = await axiosInstance.post('/organization', formData);
 
       if (!response?.data?.user?._id || !response?.data?.organization?._id) {
         throw new Error("Invalid response from server");
@@ -176,11 +179,18 @@ const Organization = memo(() => {
 
       const { user, organization } = response.data;
 
-      Cookies.set('userId', user._id, { expires: 7 });
-      Cookies.set('organizationId', organization._id, { expires: 7 });
-
-      // const safeObjectsData = Array.isArray(objectsData) ? objectsData : [];
-      // const safeTabsData = Array.isArray(tabsData) ? tabsData : [];
+      // Set cookies with proper domain
+      Cookies.set('userId', user._id, { 
+        expires: 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+      
+      Cookies.set('organizationId', organization._id, {
+        expires: 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
 
       // const accessBody = safeObjectsData.map(tab => ({
       //   ObjName: tab,
