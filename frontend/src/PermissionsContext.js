@@ -14,13 +14,27 @@ export const PermissionsProvider = ({ children }) => {
   const [tabPermissions, setTabPermissions] = useState({});
   const [sharingPermissionscontext, setSharingPermissions] = useState({});
 
+  const baseURL = 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net';
+
+  const tryApiCall = async (apiCall) => {
+    try {
+      return await apiCall(baseURL);
+    } catch (error) {
+      // If Azure URL fails, try localhost
+      return await apiCall('http://localhost:3000');
+    }
+  };
+
   useEffect(() => {
     const initialize = async () => {
       const userId = Cookies.get("userId");
       console.log("userId PermissionsContext", userId);
 
       try {
-        const matchedUser = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/${userId}`);
+        // const matchedUser = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/${userId}`);
+        const matchedUser = await tryApiCall(async (url) => 
+          await axios.get(`${url}/auth/users/${userId}`)
+        );
         setUserProfile(matchedUser.data);
         if (matchedUser.data && matchedUser.data.Name) {
           Cookies.set("userName", matchedUser.data.Name);
@@ -38,11 +52,17 @@ export const PermissionsProvider = ({ children }) => {
           setFreelancer(false);
         }
         if (matchedUser.data) {
-          const profileResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/profiles/${matchedUser.data.ProfileId}`);
+          // const profileResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/profiles/${matchedUser.data.ProfileId}`);
+          const profileResponse = await tryApiCall(async (url) => 
+            await axios.get(`${url}/api/profiles/${matchedUser.data.ProfileId}`)
+          );
           setUserProfile(profileResponse.data);
 
           const organizationId = Cookies.get('organizationId');
-          const sharingResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/sharing-settings`);
+          // const sharingResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/sharing-settings`);
+          const sharingResponse = await tryApiCall(async (url) => 
+            await axios.get(`${url}/api/sharing-settings`)
+          );
           const sharesetting = sharingResponse.data.filter(profile => profile.organizationId === organizationId);
           setSharingSettings(sharesetting);
 
