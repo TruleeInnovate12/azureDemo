@@ -37,7 +37,7 @@ const initializeApp = async (setUserProfile, setUserRole, setSharingSettings, se
   const userId = Cookies.get("userId");
   console.log("userId initializeApp", userId);
   const backendUrl = process.env.NODE_ENV === 'production'
-    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net/'
+    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net'
     : 'http://localhost:4041';
 
 
