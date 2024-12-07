@@ -240,7 +240,7 @@ app.use(bodyParser.json());
 
 const allowedOrigins = ["https://www.app.upinterview.io"];
 
-// Remove the previous CORS middleware
+// Remove any existing cors middleware and replace with this
 app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
