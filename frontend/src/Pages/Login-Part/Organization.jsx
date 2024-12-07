@@ -52,7 +52,7 @@ const Organization = memo(() => {
   const navigate = useNavigate();
 
   const backendUrl = process.env.NODE_ENV === 'production'
-    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net/'
+    ? 'https://basic-backend-001-fadbheefgmdffzd4.uaenorth-01.azurewebsites.net'
     : 'http://localhost:4041';
 
 
@@ -159,7 +159,12 @@ const Organization = memo(() => {
         password: selectedPassword
       };
 
-      const response = await axios.post(`${backendUrl}/organization`, formData);
+      const response = await axios.post(`${backendUrl}/organization`, formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      });
 
       if (!response?.data?.user?._id || !response?.data?.organization?._id) {
         throw new Error("Invalid response from server");
