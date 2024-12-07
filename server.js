@@ -38,117 +38,59 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-// Near the top of the file, after require statements
+// MongoDB connection setup with better error handling and retry logic
 const connectDB = async () => {
     const maxRetries = 5;
     let retries = 0;
 
-    // Add detailed logging of connection options
-    const connectionOptions = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        retryWrites: false,
-        maxPoolSize: 10,
-        serverSelectionTimeoutMS: 10000, // Increased timeout
-        connectTimeoutMS: 10000,
-        socketTimeoutMS: 45000,
-        family: 4, // Force IPv4
-        keepAlive: true,
-        keepAliveInitialDelay: 300000
-    };
-
-    console.log('Attempting MongoDB connection with URI:',
-        mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@')); // Hide credentials in logs
-
     while (retries < maxRetries) {
         try {
-            console.log(`Connection attempt ${retries + 1} of ${maxRetries}`);
+            await mongoose.connect(mongoUri, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                retryWrites: false, // Important for Azure Cosmos DB
+                maxPoolSize: 10, // Limit connection pool size
+                serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+                // Add reconnect options
+                autoReconnect: true,
+                reconnectTries: Number.MAX_VALUE,
+                reconnectInterval: 1000
+            });
 
-            await mongoose.connect(mongoUri, connectionOptions);
-
-            // Test the connection
-            await mongoose.connection.db.admin().ping();
-
-            console.log('MongoDB connection successful!');
-            console.log('Connected to database:', mongoose.connection.name);
-            console.log('MongoDB version:', await mongoose.connection.db.admin().serverInfo());
-
-            return true;
+            console.log('Connected to MongoDB');
+            break; // Exit loop if connection successful
         } catch (err) {
             retries++;
-            console.error(`MongoDB connection attempt ${retries} failed:`, {
-                error: err.message,
-                code: err.code,
-                name: err.name,
-                stack: err.stack
-            });
+            console.error(`MongoDB connection attempt ${retries} failed:`, err);
 
             if (retries === maxRetries) {
                 console.error('Max retries reached. Exiting...');
-                return false;
+                process.exit(1);
             }
 
-            // Exponential backoff
-            const delay = Math.min(1000 * Math.pow(2, retries), 10000);
-            console.log(`Waiting ${delay}ms before retry...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
 };
 
-// Enhanced error handlers with more detailed logging
+// Enhanced error handlers
 mongoose.connection.on('error', err => {
-    console.error('MongoDB connection error:', {
-        error: err.message,
-        code: err.code,
-        name: err.name,
-        state: mongoose.connection.readyState
-    });
-
-    // Only attempt reconnect if not already connecting
-    if (mongoose.connection.readyState !== 2) {
-        console.log('Attempting to reconnect...');
-        connectDB();
-    }
+    console.error('MongoDB connection error:', err);
+    // Attempt to reconnect
+    connectDB();
 });
 
 mongoose.connection.on('disconnected', () => {
-    console.log('MongoDB disconnected', {
-        timestamp: new Date().toISOString(),
-        lastState: mongoose.connection.readyState
-    });
-
-    // Only attempt reconnect if not already connecting
-    if (mongoose.connection.readyState !== 2) {
-        console.log('Attempting to reconnect...');
-        connectDB();
-    }
+    console.log('MongoDB disconnected. Attempting to reconnect...');
+    connectDB();
 });
 
 mongoose.connection.on('connected', () => {
-    console.log('MongoDB connected successfully', {
-        timestamp: new Date().toISOString(),
-        database: mongoose.connection.name,
-        host: mongoose.connection.host,
-        models: Object.keys(mongoose.models)
-    });
+    console.log('MongoDB connected successfully');
 });
 
-// Initialize connection with better error handling
-(async () => {
-    try {
-        const connected = await connectDB();
-        if (!connected) {
-            console.error('Failed to establish initial MongoDB connection');
-            process.exit(1);
-        }
-    } catch (err) {
-        console.error('Unexpected error during MongoDB connection:', err);
-        process.exit(1);
-    }
-})();
-
-// Update test endpoint with more comprehensive diagnostics
+// Modified test endpoint with more detailed diagnostics
 app.get('/test-db', async (req, res) => {
     try {
         const dbState = mongoose.connection.readyState;
@@ -159,26 +101,15 @@ app.get('/test-db', async (req, res) => {
             3: "disconnecting"
         };
 
-        // Test basic database operations
-        const pingResult = await mongoose.connection.db.admin().ping();
-        const serverStatus = await mongoose.connection.db.admin().serverStatus();
-
+        // Add more diagnostic information
         const diagnostics = {
             status: 'success',
-            connection: {
-                state: states[dbState],
-                url: mongoose.connection.host,
-                port: mongoose.connection.port,
-                name: mongoose.connection.name,
-                readyState: dbState
-            },
-            server: {
-                version: serverStatus.version,
-                uptime: serverStatus.uptime,
-                connections: serverStatus.connections
-            },
+            connection: states[dbState],
+            database: mongoose.connection.name,
+            host: mongoose.connection.host,
+            port: mongoose.connection.port,
             models: Object.keys(mongoose.models),
-            ping: pingResult,
+            connectionOptions: mongoose.connection.config || {},
             timestamp: new Date().toISOString()
         };
 
@@ -193,8 +124,6 @@ app.get('/test-db', async (req, res) => {
         res.status(500).json({
             status: 'error',
             message: error.message,
-            code: error.code,
-            name: error.name,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
             timestamp: new Date().toISOString()
         });
@@ -311,9 +240,37 @@ app.use(bodyParser.json());
 
 const allowedOrigins = ["https://www.app.upinterview.io"];
 app.use(cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  credentials: true,
+  maxAge: 86400 // 24 hours
+}));
+
+// Add preflight OPTIONS handler
+app.options('*', cors());
+
+// Add error handler for CORS errors
+app.use((err, req, res, next) => {
+  if (err.message.includes('CORS')) {
+    res.status(403).json({
+      error: 'CORS Error',
+      message: err.message
+    });
+  } else {
+    next(err);
+  }
 }));
 
 // app.use(cors({
@@ -4285,4 +4242,5 @@ app.get('/health', (req, res) => {
         });
     }
 });
+
 
